@@ -7,13 +7,12 @@ typedef struct {
 } kalman_state;
 
 int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate, int Length) {
-	int i; 
+	int i;
 	kstate->x=OutputArray[0];
 	
 	for (i = 0;i< Length;i++){
 
 		kstate->p = kstate->p + kstate->q;
-		kstate->k = kstate->p / (kstate->p + kstate->r);
 		kstate->x = kstate->x  + kstate->k  *  (InputArray[i] - kstate->x);
 		kstate->p = (1.0f - kstate->k) * kstate->p;
 		OutputArray[i]=kstate->x;
