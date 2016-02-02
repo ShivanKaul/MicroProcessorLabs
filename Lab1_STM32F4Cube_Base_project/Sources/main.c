@@ -19,6 +19,10 @@ int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate,
 		kstate->p = (1.0f - kstate->k) * kstate->p;
 		OutputArray[i]=kstate->x;
 		
+		if (OutputArray[i] != OutputArray[i]) { 
+			return 0;
+		}
+		
 	}
 	return 1;
 }
@@ -27,15 +31,14 @@ int main(){
 	float input[]={10.0,11.0,12.0,13.0,14.0};
 	float	output[5];
 	int i =0;
-	kalman_state k= k_def;
+	kalman_state k = k_def;
 	
-	Kalmanfilter_C(input,output,&k,5);
-	for (;i<5; i++ ){
-		printf("ohai %f\n",output[i]);\
-		if (output[i]==NaN){
-			
+	if (Kalmanfilter_C(input,output,&k,5)) {
+		for (;i<5; i++ ){
+			printf("ohai %f\n",output[i]);
 		}
+		return 0;
 	}
-	return 0;
+	else return 1;
 }
 

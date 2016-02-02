@@ -36,5 +36,9 @@ REPEAT
 	
 	CMP R10, R3 ;comparing counter and length
 	BNE REPEAT;
+	
+	;; AND apsr 
+	;;AND , , #0x01000000
+	VMRS APSR_nzcv, FPSCR
 	BX LR
 	end
