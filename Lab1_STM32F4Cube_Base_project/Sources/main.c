@@ -77,7 +77,19 @@ void correlation(float input[], float output[], float corr[]) {
 }
 
 void convolution(float input[], float output[], float conv[]) {
+	int n;
+	for (n = 0; n < 2 * LEN - 1; n++) {
+	    int kmin, kmax, k;
 	
+	    conv[n] = 0;
+	
+	    kmin = (n >= LEN - 1) ? n - (LEN - 1) : 0;
+	    kmax = (n < LEN - 1) ? n : LEN - 1;
+	
+	    for (k = kmin; k <= kmax; k++) {
+	      conv[n] += input[k] * output[n - k];
+	    }
+  }
 }
 
 
