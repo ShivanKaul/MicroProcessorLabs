@@ -69,10 +69,10 @@ void correlation(float input[], float output[], float corr[]) {
 	} 
 	for (i = 1; i < LEN; i++) {
 		float temp;
-		for (j = 0; j < LEN - i -1; j++) {
-			temp += input[i] *output[i-j - 1];
+		for (j = 0; j < LEN - i; j++) {
+			temp += input[i+j] *output[j];
 		}			
-		corr[LEN + i] = temp;
+		corr[LEN + i-1] = temp;
 	} 
 }
 
