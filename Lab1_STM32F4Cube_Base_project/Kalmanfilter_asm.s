@@ -2,7 +2,7 @@
 		EXPORT Kalmanfilter_asm
 Kalmanfilter_asm
 	PUSH    {LR,R4-R7}
-	VLDR.f32	S7,	=1.0 ; FLOAT CONSTANT 1
+	VLDR.f32 S7, =1.0 ; FLOAT CONSTANT 1
 	MOV	R4, #0 ; counter
 	
 	; Declarations
