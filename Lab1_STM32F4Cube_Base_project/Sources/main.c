@@ -87,7 +87,9 @@ int main(){
 	float	outputC[LEN];
 	float	outputASM[LEN];
 	float subC[LEN];
-	float meanAndStdDev[2];
+	float subASM[LEN];
+	float meanAndStdDevC[2];
+	float meanAndStdDevASM[2];
 	float corrC[2 * LEN - 1];
 	float convC[2 * LEN - 1];
 	float corrASM[2 * LEN - 1];
@@ -116,10 +118,15 @@ int main(){
 	// Part 3
 	
 	subtraction(input, outputC, subC);
-	stdev(subC, meanAndStdDev);
+	stdev(subC, meanAndStdDevC);
 	correlation(input, outputC, corrC);
 	convolution(input, outputC, convC);
 	
-	
+	arm_sub_f32	(	input,outputASM,subASM,LEN);
+	arm_mean_f32	(subASM,LEN,meanAndStdDevASM); 
+	arm_std_f32	(subASM,LEN,&(meanAndStdDevASM[1]));
+	arm_correlate_f32 (input, LEN, outputASM, LEN, corrASM);
+	arm_conv_f32 (input, LEN, outputASM, LEN, convASM);
+		
 }
 
