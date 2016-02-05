@@ -86,10 +86,12 @@ int main(){
 	float input[]={10.0,11.0,12.0,13.0,14.0};
 	float	outputC[LEN];
 	float	outputASM[LEN];
-	float sub[LEN];
+	float subC[LEN];
 	float meanAndStdDev[2];
-	float corr[2 * LEN - 1];
-	float conv[2 * LEN - 1];
+	float corrC[2 * LEN - 1];
+	float convC[2 * LEN - 1];
+	float corrASM[2 * LEN - 1];
+	float convASM[2 * LEN - 1];
 	int i;
 	kalman_state kC = k_def, kASM = k_def;
 	
@@ -113,10 +115,10 @@ int main(){
 	
 	// Part 3
 	
-	subtraction(input, outputC, sub);
-	stdev(sub, meanAndStdDev);
-	correlation(input, outputC, corr);
-	convolution(input, outputC, conv);
+	subtraction(input, outputC, subC);
+	stdev(subC, meanAndStdDev);
+	correlation(input, outputC, corrC);
+	convolution(input, outputC, convC);
 	
 	
 }
