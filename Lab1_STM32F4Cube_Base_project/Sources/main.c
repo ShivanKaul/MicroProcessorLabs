@@ -7,6 +7,7 @@ typedef struct {
 	float q, r, x, p,  k;
 } kalman_state;
 
+// Used to call Assembly subroutine, respecting calling convention
 int Kalmanfilter_asm (float* InputArray, float* OutputArray, kalman_state* kstate, int Length);
 
 int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate, int Length) {
@@ -29,6 +30,7 @@ int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate,
 	return 0;
 }
 
+// Part 3
 void subtraction(float orig[], float calculated[] ,float sub[]) {
 	int i;
 	for (i = 0; i < LEN; i++) {
@@ -79,17 +81,17 @@ void correlation(float input[], float output[], float corr[]) {
 void convolution(float input[], float output[], float conv[]) {
 	int n;
 	for (n = 0; n < 2 * LEN - 1; n++) {
-	    int kmin, kmax, k;
+		int kmin, kmax, k;
 	
-	    conv[n] = 0;
+		conv[n] = 0;
 	
-	    kmin = (n >= LEN - 1) ? n - (LEN - 1) : 0;
-	    kmax = (n < LEN - 1) ? n : LEN - 1;
+		kmin = (n >= LEN - 1) ? n - (LEN - 1) : 0;
+		kmax = (n < LEN - 1) ? n : LEN - 1;
 	
-	    for (k = kmin; k <= kmax; k++) {
-	      conv[n] += input[k] * output[n - k];
-	    }
-  }
+		for (k = kmin; k <= kmax; k++) {
+			conv[n] += input[k] * output[n - k];
+		}
+	}
 }
 
 
@@ -119,6 +121,7 @@ int main(){
 		printf("Encountered a NaN in the assembly subroutine.\n");
 	}
 	
+	// Print!
 	for (i = 0; i < LEN; i++) {
 		printf("Item %d in outputC is %f\n", i, outputC[i]);
 	}
@@ -127,24 +130,26 @@ int main(){
 		printf("Item %d in outputASM is %f\n", i, outputASM[i]);
 	}
 	
-	// Part 3
+	// Part 3 calling
 	
 	subtraction(input, outputC, subC);
 	stdev(subC, meanAndStdDevC);
 	correlation(input, outputC, corrC);
 	convolution(input, outputC, convC);
 	
+	// DSP calling
 	arm_sub_f32	(	input,outputASM,subASM,LEN);
 	arm_mean_f32	(subASM,LEN,meanAndStdDevASM); 
 	arm_std_f32	(subASM,LEN,&(meanAndStdDevASM[1]));
 	arm_correlate_f32 (input, LEN, outputASM, LEN, corrASM);
 	arm_conv_f32 (input, LEN, outputASM, LEN, convASM);
 	printf("\n");
+	
+	// Print!
 	for (i = 0; i < 2*LEN-1; i++) {
 		printf("Item %d in corr  is c:%f\ta:%f\n", i,corrC[i], corrASM[i]);
 		printf("Item %d in conv  is c:%f\ta:%f\n", i,convC[i], convASM[i]);
 		printf("\n");
 	}
-		
 }
 
