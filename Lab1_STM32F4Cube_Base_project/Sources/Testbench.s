@@ -10,25 +10,8 @@ Testbench
 	LDR R1, =output
 	LDR R2, =k_struct
 	
-	; Declarations
-	;VLDR.f32	S0,	=0.1 ; Q
-	;VLDR.f32	S1,	=0.1 ; R
-	;VLDR.f32	S2,	=0.0 ; X
-	;VLDR.f32	S3,	=0.1 ; P
-	;VLDR.f32	S4,	=0.0 ; K
-	
-	
-	
 	LDR	R4, =Kalmanfilter_asm
-	BX	R4 ; blx?
-	
-	; Store
-	 ;STR R2, [R1]
-	
-	; Jump out
-	; BX LR
-
-
+	BX	R4
 	
 	ALIGN
 input	DCFS	10.0, 11.0, 12.0
