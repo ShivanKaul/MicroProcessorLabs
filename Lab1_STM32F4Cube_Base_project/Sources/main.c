@@ -2,7 +2,6 @@
 #include "arm_math.h"
 
 #define k_def { 0.1f, 0.1f, 0.0f, 0.1f, 0.0f }
-#define NaN 0.0
 #define LEN 5
 typedef struct {
 	float q, r, x, p,  k;
@@ -60,15 +59,16 @@ void stdev(float array[], float meanAndStdDev[]) {
 void correlation(float input[], float output[], float corr[]) {
 	int i;
 	int j;
+	float temp=0;
 	for (i = 0; i < LEN; i++) {
-		float temp;
+		temp=0;
 		for (j = 0; j < i + 1; j++) {
 			temp += input[j] * output[LEN - 1 + j - i];
 		}			
 		corr[i] = temp;
 	} 
 	for (i = 1; i < LEN; i++) {
-		float temp;
+		temp=0;
 		for (j = 0; j < LEN - i; j++) {
 			temp += input[i+j] *output[j];
 		}			
@@ -127,6 +127,9 @@ int main(){
 	arm_std_f32	(subASM,LEN,&(meanAndStdDevASM[1]));
 	arm_correlate_f32 (input, LEN, outputASM, LEN, corrASM);
 	arm_conv_f32 (input, LEN, outputASM, LEN, convASM);
+	for (i = 0; i < 2*LEN-1; i++) {
+		printf("Item %d in corr  is c:%f\ta:%f\n", i,corrC[i], corrASM[i]);
+	}
 		
 }
 
