@@ -139,8 +139,11 @@ int main(){
 	arm_std_f32	(subASM,LEN,&(meanAndStdDevASM[1]));
 	arm_correlate_f32 (input, LEN, outputASM, LEN, corrASM);
 	arm_conv_f32 (input, LEN, outputASM, LEN, convASM);
+	printf("\n");
 	for (i = 0; i < 2*LEN-1; i++) {
 		printf("Item %d in corr  is c:%f\ta:%f\n", i,corrC[i], corrASM[i]);
+		printf("Item %d in conv  is c:%f\ta:%f\n", i,convC[i], convASM[i]);
+		printf("\n");
 	}
 		
 }
