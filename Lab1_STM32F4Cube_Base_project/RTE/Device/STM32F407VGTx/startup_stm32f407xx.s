@@ -185,7 +185,7 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
 Reset_Handler    PROC
                  EXPORT  Reset_Handler             [WEAK]
        ; IMPORT  SystemInit
-        ;IMPORT  __main
+        IMPORT  __main
 				IMPORT	Testbench
 								; MAGIC FPU CODE
 								 LDR.W R0, =0XE000ED88
@@ -201,8 +201,9 @@ Reset_Handler    PROC
                 ; BX      R0
 								 
 								
-								 LDR			R0, =Testbench
-								 BX				R0
+								 ;;LDR			R0, =Testbench
+								 LDR				R0, =__main
+								 BLX				R0
 								 
 								 ; 
 				 NOP

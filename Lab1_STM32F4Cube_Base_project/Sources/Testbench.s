@@ -19,8 +19,8 @@ Testbench
 	
 	
 	
-	LDR	R3, =Kalmanfilter_asm
-	BX	R3 ; blx?
+	LDR	R4, =Kalmanfilter_asm
+	BX	R4 ; blx?
 	
 	; Store
 	 ;STR R2, [R1]

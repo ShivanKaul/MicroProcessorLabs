@@ -39,6 +39,14 @@ REPEAT
 	
 	;; AND apsr 
 	;;AND , , #0x01000000
-	VMRS APSR_nzcv, FPSCR
+	VMRS	R11, FPSCR
+	
+	AND R12, R11, #0xF
+	MOV R0, #0
+	CMP R12, R0
+	BEQ RETURN
+	MOV R0, #1
+	
+RETURN 
 	BX LR
 	end
