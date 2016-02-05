@@ -4,7 +4,8 @@ Kalmanfilter_asm
 	PUSH    {LR,R4-R7}
 	VLDR.f32	S7,	=1.0 ; FLOAT CONSTANT 1
 	MOV	R4, #0 ; counter
-		; Declarations
+	
+	; Declarations
 	VLDR.f32	S0,	[R2] ; Q
 	ADD R2, R2, #4
 	VLDR.f32	S1,	[R2] ; R
@@ -15,9 +16,9 @@ Kalmanfilter_asm
 	ADD R2, R2, #4
 	VLDR.f32	S4,	[R2] ; K
 REPEAT
-	VLDR.f32  S6, [R0];;putting measurement from inputarray 
+	VLDR.f32  S6, [R0] ; Putting measurement from inputarray 
 	
-	;;filter code
+	; Filter code
 	VADD.f32	S3, S3, S0 ; p= p + q
 	VADD.f32	S5, S3, S1 ; temp1= p + r
 	VDIV.f32  S4, S3, S5; k = p/ temp1
@@ -27,10 +28,10 @@ REPEAT
 	VSUB.f32	S5, S7, S4 ; temp4= 1 - k
 	VMUL.f32	S3, S5, S3 ; p=temp4 * p
 	
-	;output is now in S2
+	; Output is now in S2
 	VSTR.f32  S2, [R1]
 	
-	;;finalizing loop
+	; Finishing up loop...
 	ADD R4, R4, #1;;incrementing
 	ADD R0, R0, #4;; incrementing input address
 	ADD R1, R1, #4;; incrementing output address
@@ -38,15 +39,14 @@ REPEAT
 	CMP R4, R3 ;comparing counter and length
 	BNE REPEAT;
 	
-	;; AND apsr 
-	;;AND , , #0x01000000
+	; Error checking
 	VMRS	R4, FPSCR
-	
 	AND R4, R4, #0xF
 	MOV R0, #0
+	
 	CMP R4, R0
 	BEQ RETURN
-	MOV R0, #1
+	MOV R0, #1 ; Return error as a 1 in R0
 
 RETURN 
 	POP    {LR,R4-R7}
