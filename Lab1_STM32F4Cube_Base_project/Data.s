@@ -1,6 +1,6 @@
 	AREA    text, DATA, READWRITE
 	EXPORT output
 		
-output FILL 12, 0
+output FILL 16, 0
 		
 	END

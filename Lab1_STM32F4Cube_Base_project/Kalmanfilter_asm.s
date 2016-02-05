@@ -33,8 +33,8 @@ REPEAT
 	
 	; Finishing up loop...
 	ADD R4, R4, #1;;incrementing
-	ADD R0, R0, #4;; incrementing input address
-	ADD R1, R1, #4;; incrementing output address
+	ADD R0, R0, #4;; incrementing input address to move to the next element
+	ADD R1, R1, #4;; incrementing output address ^^
 	
 	CMP R4, R3 ;comparing counter and length
 	BNE REPEAT;

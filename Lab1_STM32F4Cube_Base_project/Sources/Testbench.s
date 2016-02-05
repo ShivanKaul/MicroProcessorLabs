@@ -5,7 +5,7 @@
 	IMPORT Kalmanfilter_asm
 		
 Testbench
-	MOV	R3, #3 ; STORE ARRAY LENGTH
+	MOV	R3, #4 ; STORE ARRAY LENGTH
 	LDR R0, =input
 	LDR R1, =output
 	LDR R2, =k_struct
@@ -14,7 +14,7 @@ Testbench
 	BX	R4
 	
 	ALIGN
-input	DCFS	10.0, 11.0, 12.0
+input	DCFS	-0.665365,-0.329988,0.164465,0.043962
 k_struct DCFS	0.1, 0.1, 0.0,0.1,0.0
 
 	END

@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "arm_math.h"
+#include "demo.h"
 
-#define k_def { 0.1f, 0.1f, 0.0f, 0.1f, 0.0f }
+#define k_def { DEF_q, DEF_r, DEF_x, DEF_p, DEF_k }
 #define LEN 5
 typedef struct {
 	float q, r, x, p,  k;
@@ -40,8 +41,8 @@ void subtraction(float orig[], float calculated[] ,float sub[]) {
 
 void stdev(float array[], float meanAndStdDev[]) {
 	
-	float mean;
-	float stdDev;
+	float mean=0;
+	float stdDev=0;
 	int i;
 	for (i = 0; i < LEN; i++) {
 		mean += array[i];
@@ -50,6 +51,7 @@ void stdev(float array[], float meanAndStdDev[]) {
 	for (i = 0; i < LEN; i++) {
 		stdDev += (array[i] - mean) * (array[i] - mean);
 	}
+	stdDev = stdDev / (LEN-1);
 	arm_sqrt_f32(stdDev, &stdDev);
 	
 	
@@ -97,7 +99,7 @@ void convolution(float input[], float output[], float conv[]) {
 
 
 int main(){
-	float input[]={10.0,11.0,12.0,13.0,14.0};
+	float* input=measurements;//{10.0,11.0,12.0,13.0,14.0};
 	float	outputC[LEN];
 	float	outputASM[LEN];
 	float subC[LEN];
@@ -108,16 +110,17 @@ int main(){
 	float convC[2 * LEN - 1];
 	float corrASM[2 * LEN - 1];
 	float convASM[2 * LEN - 1];
-	int i;
+	int i,cBool, asmBool;
 	kalman_state kC = k_def, kASM = k_def;
-	
+	cBool=Kalmanfilter_C(input,outputC,&kC,LEN);
 	// call kalman.c
-	if (Kalmanfilter_C(input,outputC,&kC,5)) {
+	if (cBool) {
 		printf("Encountered a NaN in the C subroutine.\n");
 	}
 	
+	asmBool=Kalmanfilter_asm(input,outputASM,&kASM,LEN);
 	// call kalman.asm
-	if (Kalmanfilter_asm(input,outputASM,&kASM,5)) {
+	if (asmBool) {
 		printf("Encountered a NaN in the assembly subroutine.\n");
 	}
 	
@@ -146,10 +149,11 @@ int main(){
 	printf("\n");
 	
 	// Print!
-	for (i = 0; i < 2*LEN-1; i++) {
-		printf("Item %d in corr  is c:%f\ta:%f\n", i,corrC[i], corrASM[i]);
-		printf("Item %d in conv  is c:%f\ta:%f\n", i,convC[i], convASM[i]);
-		printf("\n");
+	for (i = 0; i < LEN; i++) {
+		printf("Item %d in %f\t %f\n", i,subC[i], subASM[i]);
 	}
+		printf("STDEV for DSP  :%f\tSTDEV for C:%f\n",meanAndStdDevASM[1], meanAndStdDevC[1]);
+		printf("Mean for DSP  :%f\tMean for C:%f\n",meanAndStdDevASM[0], meanAndStdDevC[0]);
+		printf("\n");
 }
 
