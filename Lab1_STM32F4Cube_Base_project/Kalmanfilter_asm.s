@@ -1,7 +1,7 @@
 	AREA    text, CODE, READONLY
 		EXPORT Kalmanfilter_asm
 Kalmanfilter_asm
-	PUSH    {LR,R4-R7}
+	PUSH    {LR,R4-R7} ;storing the previous values on the stack, as per calling convention
 	VLDR.f32 S7, =1.0 ; FLOAT CONSTANT 1
 	MOV	R4, #0 ; counter
 	
@@ -39,14 +39,14 @@ REPEAT
 	CMP R4, R3 ;comparing counter and length
 	BNE REPEAT;
 	
-	; Error checking
+	; Error checking for cumulative Overflow, underflow and division by zero 
 	VMRS	R4, FPSCR
 	AND R4, R4, #0xF
-	MOV R0, #0
+	MOV R0, #0 ;output is 0 if no error occured
 	
 	CMP R4, R0
 	BEQ RETURN
-	MOV R0, #1 ; Return error as a 1 in R0
+	MOV R0, #1 ; Return error as a 1 in R0 
 
 RETURN 
 	POP    {LR,R4-R7}
