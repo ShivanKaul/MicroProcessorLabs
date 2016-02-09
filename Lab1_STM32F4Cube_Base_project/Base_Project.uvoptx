@@ -421,7 +421,7 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Data.s</PathWithFileName>
+      <PathWithFileName>.\Sources\Data.s</PathWithFileName>
       <FilenameWithoutPath>Data.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -434,7 +434,7 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Kalmanfilter_asm.s</PathWithFileName>
+      <PathWithFileName>.\Sources\Kalmanfilter_asm.s</PathWithFileName>
       <FilenameWithoutPath>Kalmanfilter_asm.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

@@ -22,9 +22,9 @@ typedef struct {
 
 /**
 * @brief Computes the kalman estimation (in Assembly) of output based on previous inputs
-* 			> follows calling conventions
+* 		> follows calling conventions
 *			> the 'extern' keyword is implicit in function declarations so it is not required here
-* @file ../Kalmanfilter_asm.s
+* @file Kalmanfilter_asm.s
 * @param InputArray reference to the array of measurements
 * @param OutputArray reference to the empty where results will be stored
 * @param Length length of both arrays 
@@ -36,18 +36,18 @@ int Kalmanfilter_asm (float* InputArray, float* OutputArray, kalman_state* kstat
 
 /**
 * @brief Computes the kalman estimation (in C)of output based on previous inputs
-* @param InputArray reference to the array of measurements
-* @param OutputArray reference to the empty where results will be stored
-* @param Length length of both arrays 
+* @param 	InputArray 		Reference to the array of measurements
+* @param 	OutputArray 	Reference to the empty where results will be stored
+* @param 	Length 				Length of both arrays 
 * @retval 	0	if no error occured
-* 			1 	if error occured during calculation
+* 					1 if error occured during calculation
 */
 int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate, int Length) {
 	int i;
 	kstate->x=OutputArray[0];
 	
 	for (i = 0;i< Length;i++){
-
+		//Equation as given in class
 		kstate->p = kstate->p + kstate->q;
 		kstate->k = kstate->p / (kstate->p + kstate->r);
 		kstate->x = kstate->x  + kstate->k  *  (InputArray[i] - kstate->x);
@@ -145,7 +145,7 @@ void correlation(float input[], float output[], float corr[]) {
 void convolution(float input[], float output[], float conv[]) {
 	int n;
 
-	//Computiing both sides of the correlation together
+	//Computiing both sides of the convolution together
 	for (n = 0; n < (2 * LEN - 1); n++) {
 		int left, right, k;
 	
@@ -159,8 +159,6 @@ void convolution(float input[], float output[], float conv[]) {
 		}
 	}
 }
-
-
 
 int main()  {
 	//Initialing all the arrays used
@@ -201,7 +199,6 @@ int main()  {
 	}
 	
 	// Part 3 calling
-	
 	subtraction(input, outputC, subC);
 	stdev(subC, meanAndStdDevC);
 	correlation(input, outputC, corrC);
@@ -215,14 +212,15 @@ int main()  {
 	arm_conv_f32 (input, LEN, outputASM, LEN, convASM);
 	printf("\n");
 	
-	// Printing substraction
+	// Printing computed values
 	for (i = 0; i < LEN; i++) {
 		printf("Subtraction %d C: %f\tDSP: %f\n", i,subC[i], subASM[i]);
 		printf("Convolution %d C: %f\tDSP: %f\n", i,convC[i], convASM[i]);
 		printf("Correlation %d C: %f\tDSP: %f\n", i,corrC[i], corrASM[i]);
 	}
-		printf("STDEV for DSP  :%f\tSTDEV for C:%f\n",meanAndStdDevASM[1], meanAndStdDevC[1]);
-		printf("Mean for DSP  :%f\tMean for C:%f\n",meanAndStdDevASM[0], meanAndStdDevC[0]);
-		printf("\n");
+	printf("\n");
+	printf("STDEV for DSP  :%f\tSTDEV for C:%f\n",meanAndStdDevASM[1], meanAndStdDevC[1]);
+	printf("Mean for DSP  :%f\tMean for C:%f\n",meanAndStdDevASM[0], meanAndStdDevC[0]);
+	
 }
 

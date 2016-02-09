@@ -49,6 +49,6 @@ REPEAT
 	MOV R0, #1 ; Return error as a 1 in R0 
 
 RETURN 
-	POP    {LR,R4-R7}
+	POP    {LR,R4-R7} ;Popping register values off of stack as per calling convention
 	BX LR
 	end

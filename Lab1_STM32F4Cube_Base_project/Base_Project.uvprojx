@@ -430,12 +430,12 @@
             <File>
               <FileName>Data.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\Data.s</FilePath>
+              <FilePath>.\Sources\Data.s</FilePath>
             </File>
             <File>
               <FileName>Kalmanfilter_asm.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\Kalmanfilter_asm.s</FilePath>
+              <FilePath>.\Sources\Kalmanfilter_asm.s</FilePath>
             </File>
           </Files>
         </Group>
