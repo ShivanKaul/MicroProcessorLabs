@@ -7,10 +7,10 @@
 #include "arm_math.h"
 #include "demo.h"
 
-//Used for initializing the kalman_state struct
+// Used for initializing the kalman_state struct
 #define k_def { DEF_q, DEF_r, DEF_x, DEF_p, DEF_k }
 
- //Used for defining the global value of length used
+ // Used for defining the global value of length used
 #define LEN 5
 typedef struct {
 	float q; /**< process noise variance */
@@ -55,7 +55,7 @@ int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate,
 		OutputArray[i]=kstate->x;
 		
 		//If any NaN is found, abort calculation and return that error has occured
-		if (OutputArray[i] != OutputArray[i]) { // NaN
+		if (OutputArray[i] != OutputArray[i]) { // NaN check
 			return 1;
 		}
 		
@@ -136,25 +136,25 @@ void correlation(float input[], float output[], float corr[]) {
 	} 
 }
 /**
-* @brief 	Computes signal Convolution between 2 arrays
+* @brief 	Computes signal Convolution of 2 arrays
 * @param 	input 	Address of an Array with values from 1st signal
 * @param 	output 	Address of an Array with values from 2nd signal
-* @param 	corr 	Address of an Array where convolution signal values will be stored
+* @param 	conv 	Address of an Array where convolution signal values will be stored
 * @retval 	None
 */
 void convolution(float input[], float output[], float conv[]) {
 	int n;
 
 	//Computiing both sides of the correlation together
-	for (n = 0; n < 2 * LEN - 1; n++) {
-		int kmin, kmax, k;
+	for (n = 0; n < (2 * LEN - 1); n++) {
+		int left, right, k;
 	
 		conv[n] = 0;
-		//Computation of limits on indices for the convulation 
-		kmin = (n >= LEN - 1) ? n - (LEN - 1) : 0;
-		kmax = (n < LEN - 1) ? n : LEN - 1;
+		// Computation of limits on indices for the convolution 
+		left = (n >= LEN - 1) ? n - (LEN - 1) : 0;
+		right = (n < LEN - 1) ? n : LEN - 1;
 	
-		for (k = kmin; k <= kmax; k++) {
+		for (k = left; k <= right; k++) {
 			conv[n] += input[k] * output[n - k];
 		}
 	}
@@ -162,9 +162,9 @@ void convolution(float input[], float output[], float conv[]) {
 
 
 
-int main(){
+int main()  {
 	//Initialing all the arrays used
-	float* input=measurements;//{10.0,11.0,12.0,13.0,14.0};
+	float* input = measurements;//{10.0,11.0,12.0,13.0,14.0};
 	float	outputC[LEN];
 	float	outputASM[LEN];
 	float subC[LEN];
@@ -208,7 +208,7 @@ int main(){
 	convolution(input, outputC, convC);
 	
 	// DSP calling
-	arm_sub_f32	(	input,outputASM,subASM,LEN);
+	arm_sub_f32	(input,outputASM,subASM,LEN);
 	arm_mean_f32	(subASM,LEN,meanAndStdDevASM); 
 	arm_std_f32	(subASM,LEN,&(meanAndStdDevASM[1]));
 	arm_correlate_f32 (input, LEN, outputASM, LEN, corrASM);
