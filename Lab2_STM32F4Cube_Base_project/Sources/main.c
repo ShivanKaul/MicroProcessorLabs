@@ -14,7 +14,7 @@
 #include "supporting_functions.h"
 
 /* Private variables ---------------------------------------------------------*/
-
+ADC_HandleTypeDef ADC1_Handle;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
 
@@ -23,6 +23,8 @@ int main(void)
   /* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+	
+	ADC1_Handle.Instance = ADC1;
 	
   /* Configure the system clock */
   SystemClock_Config();
