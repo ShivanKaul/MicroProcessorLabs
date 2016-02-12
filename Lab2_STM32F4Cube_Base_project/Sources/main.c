@@ -13,23 +13,65 @@
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
 
+#define INIT {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef ADC1_Handle;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
 
+
+uint32_t g_ADCValue;
+int g_MeasurementNumber;
+
 int main(void)
 {
+	
   /* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-	
-	ADC1_Handle.Instance = ADC1;
-	
-  /* Configure the system clock */
+	/* Configure the system clock */
   SystemClock_Config();
 	
+	// ADC Init
+	__HAL_RCC_ADC1_CLK_ENABLE();
+	ADC1_Handle.Instance = ADC1;
+	ADC1_Handle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	ADC1_Handle.Init.Resolution = ADC_RESOLUTION_12B;
+	ADC1_Handle.Init.ScanConvMode = DISABLE;
+	ADC1_Handle.Init.ContinuousConvMode = ENABLE;
+	ADC1_Handle.Init.DiscontinuousConvMode = DISABLE;
+	ADC1_Handle.Init.NbrOfDiscConversion = 0;
+	ADC1_Handle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+	ADC1_Handle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
+	ADC1_Handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	ADC1_Handle.Init.NbrOfConversion = 1;
+	ADC1_Handle.Init.DMAContinuousRequests = ENABLE;
+	ADC1_Handle.Init.EOCSelection = DISABLE;
+	HAL_ADC_Init(&ADC1_Handle);
+	
+	// Channel
+	ADC_ChannelConfTypeDef ADC_Channel;
+	ADC_Channel.Channel = ADC_CHANNEL_16;
+	ADC_Channel.Rank = 1;
+	ADC_Channel.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+	ADC_Channel.Offset = 0;
+	
+	
+	if (HAL_ADC_ConfigChannel(&ADC1_Handle, &ADC_Channel) != HAL_OK) {
+        Error_Handler(ADC_INIT_FAIL);
+	}
+	
+	HAL_ADC_Start(&ADC1_Handle);
+	
+  
+	
 	while (1){
+		if (HAL_ADC_PollForConversion(&ADC1_Handle, 1000000) == HAL_OK)
+		{
+				g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
+				g_MeasurementNumber++;
+		}
 	}
 }
 
