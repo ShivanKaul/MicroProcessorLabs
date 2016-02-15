@@ -34,8 +34,9 @@ int main(void)
   SystemClock_Config();
 	
 	// ADC Init
-	__HAL_RCC_ADC1_CLK_ENABLE();
-	ADC1_Handle.Instance = ADC1;
+	__HAL_RCC_ADC1_CLK_ENABLE(); // Clock enable
+	ADC1_Handle.Instance = ADC1; // Intance
+	// Init state
 	ADC1_Handle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
 	ADC1_Handle.Init.Resolution = ADC_RESOLUTION_12B;
 	ADC1_Handle.Init.ScanConvMode = DISABLE;
@@ -48,31 +49,41 @@ int main(void)
 	ADC1_Handle.Init.NbrOfConversion = 1;
 	ADC1_Handle.Init.DMAContinuousRequests = ENABLE;
 	ADC1_Handle.Init.EOCSelection = DISABLE;
-	HAL_ADC_Init(&ADC1_Handle);
+	// ADC init
+	if (HAL_ADC_Init(&ADC1_Handle) != HAL_OK){
+		Error_Handler(ADC_INIT_FAIL);
+	}
 	
 	// Channel
 	ADC_ChannelConfTypeDef ADC_Channel;
-	ADC_Channel.Channel = ADC_CHANNEL_16;
+	ADC_Channel.Channel = ADC_CHANNEL_16; // Temperature sensor
 	ADC_Channel.Rank = 1;
-	ADC_Channel.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+	ADC_Channel.SamplingTime = ADC_SAMPLETIME_480CYCLES; // Ask Ashraf
 	ADC_Channel.Offset = 0;
 	
-	
+	// Config channel
 	if (HAL_ADC_ConfigChannel(&ADC1_Handle, &ADC_Channel) != HAL_OK) {
         Error_Handler(ADC_INIT_FAIL);
 	}
 	
+	// ADC start
 	HAL_ADC_Start(&ADC1_Handle);
 	
-  
-	
 	while (1){
-		if (HAL_ADC_PollForConversion(&ADC1_Handle, 1000000) == HAL_OK)
+		// Define ADC polling frequency
+		if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK) // What should the time out be?
 		{
 				g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
+				g_ADCValue *= 3000;
+				g_ADCValue /= 1000.0;
+				g_ADCValue -= 0.76;
+				g_ADCValue /= 0.0025;
+				g_ADCValue += 25.0;
 				g_MeasurementNumber++;
 		}
 	}
+	// Stop ADC
+	HAL_ADC_Stop(&ADC1_Handle);
 }
 
 
