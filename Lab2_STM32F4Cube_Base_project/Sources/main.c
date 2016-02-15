@@ -23,6 +23,7 @@ void SystemClock_Config	(void);
 
 uint32_t g_ADCValue;
 int g_MeasurementNumber;
+int NOW_CONVERT;
 
 int main(void)
 {
@@ -33,11 +34,29 @@ int main(void)
 	/* Configure the system clock */
   SystemClock_Config();
 	
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	
+	
+	NOW_CONVERT = 0;
+	
+	// GPIO clock
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	
+	
+
+	
+	  /* Configure PC8 and PC9 in output pushpull mode */
+	GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2| GPIO_PIN_3 | GPIO_PIN_3
+	| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 ;
+	
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);// it will initalise the port c (first argument ) with the structure whose members are initialized above
+	
 	// ADC Init
 	__HAL_RCC_ADC1_CLK_ENABLE(); // Clock enable
 	ADC1_Handle.Instance = ADC1; // Intance
 	// Init state
-	ADC1_Handle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	ADC1_Handle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
 	ADC1_Handle.Init.Resolution = ADC_RESOLUTION_12B;
 	ADC1_Handle.Init.ScanConvMode = DISABLE;
 	ADC1_Handle.Init.ContinuousConvMode = ENABLE;
@@ -58,7 +77,10 @@ int main(void)
 	ADC_ChannelConfTypeDef ADC_Channel;
 	ADC_Channel.Channel = ADC_CHANNEL_16; // Temperature sensor
 	ADC_Channel.Rank = 1;
-	ADC_Channel.SamplingTime = ADC_SAMPLETIME_480CYCLES; // Ask Ashraf
+	ADC_Channel.SamplingTime = ADC_SAMPLETIME_480CYCLES; // TODO: Ask Ashraf why
+	// TODO: how do we know APB2 for ADC
+	// TDO: how do we check if running on board
+	// TODO: Systick
 	ADC_Channel.Offset = 0;
 	
 	// Config channel
@@ -66,21 +88,31 @@ int main(void)
         Error_Handler(ADC_INIT_FAIL);
 	}
 	
-	// ADC start
-	HAL_ADC_Start(&ADC1_Handle);
 	
-	while (1){
+	
+	while (1) {
 		// Define ADC polling frequency
-		if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK) // What should the time out be?
-		{
-				g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
-				g_ADCValue *= 3000;
-				g_ADCValue /= 1000.0;
-				g_ADCValue -= 0.76;
-				g_ADCValue /= 0.0025;
-				g_ADCValue += 25.0;
-				g_MeasurementNumber++;
+		// systick
+		// ADC start
+		
+		
+		if (NOW_CONVERT) {
+			NOW_CONVERT = 0;
+			HAL_ADC_Start(&ADC1_Handle); // <3
+			//4.Making sense of data
+			if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK) // TODO: What should the time out be? <-- YOUR FACE <3
+			{
+					g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
+					g_ADCValue *= 3000;
+					g_ADCValue /= 1000.0;
+					g_ADCValue -= 0.76;
+					g_ADCValue /= 0.0025;
+					g_ADCValue += 25.0;
+					g_MeasurementNumber++;
+			}
+			
 		}
+		
 	}
 	// Stop ADC
 	HAL_ADC_Stop(&ADC1_Handle);
@@ -115,8 +147,8 @@ void SystemClock_Config(void){
   RCC_ClkInitStruct.APB2CLKDivider 	= RCC_HCLK_DIV2;
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5)!= HAL_OK){Error_Handler(RCC_CONFIG_FAIL);};
 	
-	/*Configures SysTick to provide 1ms interval interrupts.*/
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+	/*Configures SysTick to provide 10ms interval interrupts.*/
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/100);
 
 	/* This function sets the source clock for the internal SysTick Timer to be the maximum,
 	   in our case, HCLK is now 168MHz*/

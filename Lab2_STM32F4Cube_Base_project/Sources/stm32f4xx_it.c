@@ -153,8 +153,11 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
+
+extern int NOW_CONVERT;
 void SysTick_Handler(void)
-{
+{		
+		NOW_CONVERT = 1;
 		HAL_IncTick();
 }
 
