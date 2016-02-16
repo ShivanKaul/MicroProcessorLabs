@@ -21,9 +21,16 @@ ADC_HandleTypeDef ADC1_Handle;
 void SystemClock_Config	(void);
 
 
-uint32_t g_ADCValue;
 int g_MeasurementNumber;
 int NOW_CONVERT;
+
+void gpioInit(void);
+void ADCInit(void);
+void ChannelInit(void);
+	
+
+void poll(void);
+void updateDisplay(float);
 
 int main(void)
 {
@@ -34,24 +41,34 @@ int main(void)
 	/* Configure the system clock */
   SystemClock_Config();
 	
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	
-	
 	NOW_CONVERT = 0;
 	
-	// GPIO clock
-	__HAL_RCC_GPIOA_CLK_ENABLE();
+	gpioInit();
+	ADCInit();
+	ChannelInit();
 	
-	
+	// Infinite run loop
+	while (1) {
+		if (NOW_CONVERT) poll();
+	}
+	// Stop ADC
+	// HAL_ADC_Stop(&ADC1_Handle);
+}
 
-	
-	  /* Configure PC8 and PC9 in output pushpull mode */
-	GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2| GPIO_PIN_3 | GPIO_PIN_3
+void gpioInit() {
+	// GPIO clock
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.Pin = GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15
 	| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 ;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStructure.Pull = GPIO_NOPULL;
 	
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);// it will initalise the port c (first argument ) with the structure whose members are initialized above
-	
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+}
+
+void ADCInit() {
 	// ADC Init
 	__HAL_RCC_ADC1_CLK_ENABLE(); // Clock enable
 	ADC1_Handle.Instance = ADC1; // Intance
@@ -72,7 +89,9 @@ int main(void)
 	if (HAL_ADC_Init(&ADC1_Handle) != HAL_OK){
 		Error_Handler(ADC_INIT_FAIL);
 	}
-	
+}
+
+void ChannelInit() {
 	// Channel
 	ADC_ChannelConfTypeDef ADC_Channel;
 	ADC_Channel.Channel = ADC_CHANNEL_16; // Temperature sensor
@@ -87,36 +106,33 @@ int main(void)
 	if (HAL_ADC_ConfigChannel(&ADC1_Handle, &ADC_Channel) != HAL_OK) {
         Error_Handler(ADC_INIT_FAIL);
 	}
-	
-	
-	
-	while (1) {
-		// Define ADC polling frequency
-		// systick
-		// ADC start
-		
-		
-		if (NOW_CONVERT) {
-			NOW_CONVERT = 0;
-			HAL_ADC_Start(&ADC1_Handle); // <3
-			//4.Making sense of data
-			if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK) // TODO: What should the time out be? <-- YOUR FACE <3
-			{
-					g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
-					g_ADCValue *= 3000;
-					g_ADCValue /= 1000.0;
-					g_ADCValue -= 0.76;
-					g_ADCValue /= 0.0025;
-					g_ADCValue += 25.0;
-					g_MeasurementNumber++;
-			}
-			
-		}
-		
-	}
-	// Stop ADC
-	HAL_ADC_Stop(&ADC1_Handle);
 }
+
+// Get values from temperature sensor
+void poll() {
+	float g_ADCValue;
+	NOW_CONVERT = 0;
+	HAL_ADC_Start(&ADC1_Handle);
+	if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK)
+	{
+			g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
+			g_ADCValue *= (3000/0xfff); //getting resolution
+			g_ADCValue /= 1000.0f;
+			g_ADCValue -= 0.76f;
+			g_ADCValue /= 0.0025f;
+			g_ADCValue += 25.0f;
+			updateDisplay(g_ADCValue);
+			//g_MeasurementNumber++;
+	}
+}
+
+// Update 7 segment display
+void updateDisplay(float num) {
+	
+	
+}
+
+
 
 
 
