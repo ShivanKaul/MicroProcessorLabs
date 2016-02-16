@@ -9,16 +9,16 @@ void updateDisplay(float num) {
 #define LED_EN_0 GPIO_PIN_4
 #define LED_EN_1 GPIO_PIN_5
 #define LED_EN_2 GPIO_PIN_6
-#define LED_DEG GPIO_PIN_14
+#define LED_DEG GPIO_PIN_12
 
 
 #define LED_A GPIO_PIN_7
-#define LED_B GPIO_PIN_8
-#define LED_C GPIO_PIN_9
-#define LED_D GPIO_PIN_10
-#define LED_E GPIO_PIN_11
-#define LED_F GPIO_PIN_12
-#define LED_G GPIO_PIN_13
+#define LED_B GPIO_PIN_9
+#define LED_C GPIO_PIN_14
+#define LED_D GPIO_PIN_8
+#define LED_E GPIO_PIN_10
+#define LED_F GPIO_PIN_11
+#define LED_G GPIO_PIN_15
 #define LED_DP GPIO_PIN_13
 
 
