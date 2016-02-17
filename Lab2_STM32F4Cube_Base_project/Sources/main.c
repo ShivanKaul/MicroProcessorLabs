@@ -12,6 +12,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
+#include <stdio.h>
 #include "init.h"
 #include "display.h"
 
@@ -61,11 +62,11 @@ void poll() {
 	if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK)
 	{
 			g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
-			g_ADCValue *= (3000/0xfff); //getting resolution
-			g_ADCValue /= 1000.0f;
-			g_ADCValue -= 0.76f;
-			g_ADCValue /= 0.0025f;
+			g_ADCValue *= (3000.0f/0xfff); //getting resolution
+			g_ADCValue -= 760.0f;
+			g_ADCValue /= 2.5f;
 			g_ADCValue += 25.0f;
+			printf("%f\n", g_ADCValue);
 			updateDisplay(g_ADCValue);
 			//g_MeasurementNumber++;
 	}
