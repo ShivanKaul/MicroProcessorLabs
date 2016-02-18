@@ -16,9 +16,10 @@
 #include "init.h"
 #include "display.h"
 
-#define INIT {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define SAMPLING_DELAY 10
 #define ALARM_THRESHOLD 35
+#define EYE_DELAY 2
+#define CHANGE_TEMP 1000
 extern float temperature_to_display;
 extern int NOW_CHANGE_DISPLAY;
 
@@ -27,26 +28,28 @@ extern int NOW_CHANGE_DISPLAY;
 ADC_HandleTypeDef ADC1_Handle;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
-
+#define SAMPLE_DELAY 10
 
 int g_MeasurementNumber;
 int NOW_CONVERT=0;
 int NOW_CHANGE_TEMP=0;
+extern int NOW_CHANGE_DISPLAY;
+
 uint32_t last_sample_time;	
 void poll(void);
 uint32_t ALARM = 0;
 uint32_t RAISE_ALARM_SEM = 0;
 uint32_t ALARM_LED = 0;
+extern int MS_PASSED;
 
 
 int main(void){
   /* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	uint32_t convert_counter=0, temperature_counter=0, display_counter=0;
   HAL_Init();
 	/* Configure the system clock */
   SystemClock_Config();
-	last_sample_time=  HAL_GetTick();//initializing ticks for clock;
-	//NOW_CONVERT = 0;
 	
 	// Init all
 	gpioInit();
@@ -55,13 +58,34 @@ int main(void){
 	
 	// Infinite run loop
 	while (1) {
+		if(MS_PASSED) {
+			MS_PASSED=0;
+			convert_counter++;
+			display_counter++;
+			temperature_counter++;
+			if (convert_counter == SAMPLE_DELAY){
+				convert_counter= 0;
+				NOW_CONVERT=1;
+			}
+			if (display_counter == EYE_DELAY){
+				display_counter= 0;
+				NOW_CHANGE_DISPLAY++;
+				if (NOW_CHANGE_DISPLAY > 3) NOW_CHANGE_DISPLAY = 0;
+			}
+			if (temperature_counter == CHANGE_TEMP){
+				temperature_counter= 0;
+				NOW_CHANGE_TEMP = 1;
+			}
+		}
 		if (NOW_CONVERT) poll();
 		updateDisplay();
 		if (ALARM) {
-			if (!(RAISE_ALARM_SEM % 500)) {
+			if (!(RAISE_ALARM_SEM % 512)) {
 				ALARM_LED++;
 			}
-			alarm();
+			alarm_on();
+		} else{
+			alarm_off();
 		}
 	}
 }

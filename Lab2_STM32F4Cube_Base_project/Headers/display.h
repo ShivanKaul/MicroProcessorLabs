@@ -4,4 +4,6 @@
 void updateDisplay(void);
 uint32_t getRegisterLEDValue(int num,int place);
 
-void alarm(void);
+void alarm_on(void);
+void alarm_off(void);
+

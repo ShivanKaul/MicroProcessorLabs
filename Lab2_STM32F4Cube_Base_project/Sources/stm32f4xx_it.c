@@ -154,36 +154,19 @@ void PendSV_Handler(void)
   * @retval None
   */
 
-extern int NOW_CONVERT, ALARM_LED, ALARM;
-extern int NOW_CHANGE_DISPLAY;
-extern int NOW_CHANGE_TEMP;
-extern uint32_t last_sample_time;
-uint32_t last_change_time;
-uint32_t last_display_time;
+extern int ALARM_LED, ALARM;
+
+int MS_PASSED;
+
 extern uint32_t RAISE_ALARM_SEM;
-#define EYE_DELAY 2
-#define CHANGE_TEMP 1000
-#define SAMPLE_DELAY 10
+
+
 void SysTick_Handler(void)
 {		
 		HAL_IncTick();
-		
+		MS_PASSED = 1;
 		RAISE_ALARM_SEM++;
-	
-		if (HAL_GetTick() - last_sample_time >= SAMPLE_DELAY){
-			NOW_CONVERT = 1;
-			last_sample_time = HAL_GetTick();
-		}
-		if (HAL_GetTick() - last_display_time >= EYE_DELAY){
-			NOW_CHANGE_DISPLAY++;
-			if (NOW_CHANGE_DISPLAY > 3) NOW_CHANGE_DISPLAY = 0;
-		}
-		if (HAL_GetTick() - last_change_time >= CHANGE_TEMP){
-			NOW_CHANGE_TEMP = 1;
-			last_change_time = HAL_GetTick();
-		}
-		
-		
+				
 }
 
 /******************************************************************************/
