@@ -160,12 +160,15 @@ extern int NOW_CHANGE_TEMP;
 extern uint32_t last_sample_time;
 uint32_t last_change_time;
 uint32_t last_display_time;
+extern uint32_t RAISE_ALARM_SEM;
 #define EYE_DELAY 2
 #define CHANGE_TEMP 1000
 #define SAMPLE_DELAY 10
 void SysTick_Handler(void)
 {		
 		HAL_IncTick();
+		
+		RAISE_ALARM_SEM++;
 	
 		if (HAL_GetTick() - last_sample_time >= SAMPLE_DELAY){
 			NOW_CONVERT = 1;
@@ -180,10 +183,6 @@ void SysTick_Handler(void)
 			last_change_time = HAL_GetTick();
 		}
 		
-		// Alarm
-		if (ALARM) {
-			ALARM_LED++;
-		}
 		
 }
 

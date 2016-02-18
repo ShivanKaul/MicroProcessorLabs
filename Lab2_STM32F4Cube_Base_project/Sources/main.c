@@ -34,7 +34,9 @@ int NOW_CONVERT=0;
 int NOW_CHANGE_TEMP=0;
 uint32_t last_sample_time;	
 void poll(void);
-int ALARM = 0;
+uint32_t ALARM = 0;
+uint32_t RAISE_ALARM_SEM = 0;
+uint32_t ALARM_LED = 0;
 
 
 int main(void){
@@ -55,7 +57,12 @@ int main(void){
 	while (1) {
 		if (NOW_CONVERT) poll();
 		updateDisplay();
-		if (ALARM) alarm();
+		if (ALARM) {
+			if (!(RAISE_ALARM_SEM % 500)) {
+				ALARM_LED++;
+			}
+			alarm();
+		}
 	}
 }
 
