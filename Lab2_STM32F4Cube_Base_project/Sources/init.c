@@ -16,10 +16,10 @@ void gpioInit(void) {
 	
 	// GPIO clock
 	__HAL_RCC_GPIOD_CLK_ENABLE();
-	GPIO_InitStructure.Pin = GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15 ;
-	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
-	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStructure.Pull = GPIO_NOPULL;
+	GPIO_InitStructureAlarm.Pin = GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15 ;
+	GPIO_InitStructureAlarm.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStructureAlarm.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStructureAlarm.Pull = GPIO_NOPULL;
 	
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStructureAlarm);
 }

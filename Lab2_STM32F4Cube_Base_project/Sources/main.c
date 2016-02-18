@@ -18,7 +18,7 @@
 
 #define INIT {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define SAMPLING_DELAY 10
-#define ALARM_THRESHOLD 31
+#define ALARM_THRESHOLD 35
 extern float temperature_to_display;
 extern int NOW_CHANGE_DISPLAY;
 
@@ -34,7 +34,7 @@ int NOW_CONVERT=0;
 int NOW_CHANGE_TEMP=0;
 uint32_t last_sample_time;	
 void poll(void);
-int ALARM;
+int ALARM = 0;
 
 
 int main(void){
