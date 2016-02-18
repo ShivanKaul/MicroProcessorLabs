@@ -158,7 +158,7 @@ extern int NOW_CONVERT;
 extern int NOW_CHANGE_DISPLAY;
 extern uint32_t last_sample_time;
 extern uint32_t last_display_time;
-#define EYE_DELAY 2
+#define EYE_DELAY 200
 #define SAMPLE_DELAY 10
 void SysTick_Handler(void)
 {		

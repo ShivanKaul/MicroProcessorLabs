@@ -18,6 +18,7 @@
 
 #define INIT {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define SAMPLING_DELAY 10
+#define ALARM_THRESHOLD 35
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef ADC1_Handle;
@@ -64,7 +65,7 @@ void poll() {
 			temperature += 25.0f;
 			printf("%f\n", temperature);
 			updateDisplay(temperature);
-			if (temperature>60){
+			if (temperature > ALARM_THRESHOLD){
 				alarm();
 			}
 			//g_MeasurementNumber++;
@@ -98,8 +99,8 @@ void SystemClock_Config(void){
   RCC_ClkInitStruct.APB2CLKDivider 	= RCC_HCLK_DIV2;
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5)!= HAL_OK){Error_Handler(RCC_CONFIG_FAIL);};
 	
-	/*Configures SysTick to provide 10ms interval interrupts.*/
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/100);
+	/*Configures SysTick to provide 1ms interval interrupts.*/
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
 	/* This function sets the source clock for the internal SysTick Timer to be the maximum,
 	   in our case, HCLK is now 168MHz*/

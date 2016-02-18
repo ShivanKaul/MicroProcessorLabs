@@ -13,7 +13,7 @@ void updateDisplay(float num) {
 		NOW_CHANGE_DISPLAY=0;
 		
 		digit = temperature_padded % 10;
-		temperature_padded/=10;
+		temperature_padded /= 10;
 		GPIOB->ODR = getRegisterLEDValue(digit,i);
 		
 	}
@@ -74,10 +74,13 @@ uint32_t getRegisterLEDValue(int num,int place) {
 	switch(place){
 		case 0:
 			val |= LED_EN_0;
+		  break;
 		case 1:
 			val |= LED_EN_1|LED_DP;
+		  break;
 		case 2:
 			val |= LED_EN_2;
+		  break;
 	}
 	return val;
 	
