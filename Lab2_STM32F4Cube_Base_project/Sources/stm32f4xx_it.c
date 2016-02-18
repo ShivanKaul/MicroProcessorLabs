@@ -163,12 +163,13 @@ extern uint32_t last_display_time;
 void SysTick_Handler(void)
 {		
 		HAL_IncTick();
+	
 		if (HAL_GetTick() - last_sample_time >= SAMPLE_DELAY){
 			NOW_CONVERT = 1;
-			
 			last_sample_time = HAL_GetTick();
 		}
-		if (HAL_GetTick() - last_sample_time >= last_display_time){
+		
+		if (HAL_GetTick() - last_display_time >= EYE_DELAY){
 			NOW_CHANGE_DISPLAY = 1;
 			last_display_time = HAL_GetTick();
 		}

@@ -4,13 +4,18 @@ int NOW_CHANGE_DISPLAY = 0;
 
 // Update 7 segment display
 void updateDisplay(float num) {
-	int temperature_padded = (int) (num*10),i,place=100,digit;
-	for (i =2; i<=0;i++){
+	int temperature_padded = (int) (num*10), 
+		i,
+		digit;
+	
+	for (i = 0; i < 3 ; i++){
 		while(!NOW_CHANGE_DISPLAY); //wait for signal to change display
 		NOW_CHANGE_DISPLAY=0;
 		
-		digit=temperature_padded/place;
+		digit = temperature_padded % 10;
+		temperature_padded/=10;
 		GPIOB->ODR = getRegisterLEDValue(digit,i);
+		
 	}
 	
 }
@@ -77,4 +82,6 @@ uint32_t getRegisterLEDValue(int num,int place) {
 	return val;
 	
 }
+
+void alarm(void){}
 
