@@ -154,7 +154,7 @@ void PendSV_Handler(void)
   * @retval None
   */
 
-extern int NOW_CONVERT;
+extern int NOW_CONVERT, ALARM_LED, ALARM;
 extern int NOW_CHANGE_DISPLAY;
 extern int NOW_CHANGE_TEMP;
 extern uint32_t last_sample_time;
@@ -178,6 +178,11 @@ void SysTick_Handler(void)
 		if (HAL_GetTick() - last_change_time >= CHANGE_TEMP){
 			NOW_CHANGE_TEMP = 1;
 			last_change_time = HAL_GetTick();
+		}
+		
+		// Alarm
+		if (ALARM) {
+			ALARM_LED++;
 		}
 		
 }

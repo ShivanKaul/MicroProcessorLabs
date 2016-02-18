@@ -18,7 +18,7 @@
 
 #define INIT {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define SAMPLING_DELAY 10
-#define ALARM_THRESHOLD 35
+#define ALARM_THRESHOLD 31
 extern float temperature_to_display;
 extern int NOW_CHANGE_DISPLAY;
 
@@ -34,6 +34,7 @@ int NOW_CONVERT=0;
 int NOW_CHANGE_TEMP=0;
 uint32_t last_sample_time;	
 void poll(void);
+int ALARM;
 
 
 int main(void){
@@ -54,6 +55,7 @@ int main(void){
 	while (1) {
 		if (NOW_CONVERT) poll();
 		updateDisplay();
+		if (ALARM) alarm();
 	}
 }
 
@@ -75,8 +77,8 @@ void poll() {
 				NOW_CHANGE_TEMP=0;
 			}
 			if (temperature > ALARM_THRESHOLD){
-				alarm();
-			}
+				ALARM = 1;
+			} else ALARM = 0;
 			//g_MeasurementNumber++;
 	}
 }

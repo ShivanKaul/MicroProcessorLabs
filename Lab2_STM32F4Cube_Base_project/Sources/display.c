@@ -1,6 +1,6 @@
 #include "display.h"
 
-int NOW_CHANGE_DISPLAY = 0;
+int NOW_CHANGE_DISPLAY = 0, ALARM_LED;
 float temperature_to_display;
 // Update 7 segment display
 void updateDisplay(void) {
@@ -30,6 +30,12 @@ void updateDisplay(void) {
 #define LED_F GPIO_PIN_11
 #define LED_G GPIO_PIN_15
 #define LED_DP GPIO_PIN_13
+
+// AlarmLEDs
+#define LED_Green GPIO_PIN_12
+#define LED_Orange GPIO_PIN_13
+#define LED_Red GPIO_PIN_14
+#define LED_Blue GPIO_PIN_15
 
 
 uint32_t getRegisterLEDValue(int num,int place) {
@@ -83,5 +89,10 @@ uint32_t getRegisterLEDValue(int num,int place) {
 	
 }
 
-void alarm(void){}
+void alarm(void){
+	if (ALARM_LED % 4 == 0) GPIOD->ODR= LED_Green;
+	if (ALARM_LED % 4 == 1) GPIOD->ODR=LED_Orange;
+	if (ALARM_LED % 4 == 2) GPIOD->ODR=LED_Red;
+	if (ALARM_LED % 4 == 3) GPIOD->ODR=LED_Blue;
+}
 
