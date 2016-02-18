@@ -93,19 +93,19 @@ uint32_t getRegisterLEDValue(int num,int place) {
 }
 
 void alarm_on(void){
-	switch(ALARM_LED % 4){
-	case 0: 
-		GPIOD->ODR = LED_Green;
-		break;
-	case 1:
-		GPIOD->ODR = LED_Orange;
-		break;
-	case 2: 
-		GPIOD->ODR = LED_Red;
-		break;
-	case 3: 
-		GPIOD->ODR = LED_Blue;
-		break;
+	switch(ALARM_LED % 4) {
+		case 0: 
+			GPIOD->ODR = LED_Green;
+			break;
+		case 1:
+			GPIOD->ODR = LED_Orange;
+			break;
+		case 2: 
+			GPIOD->ODR = LED_Red;
+			break;
+		case 3: 
+			GPIOD->ODR = LED_Blue;
+			break;
 	}
 	//GPIOD->ODR = 0;
 }

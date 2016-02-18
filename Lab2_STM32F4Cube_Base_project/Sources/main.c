@@ -17,7 +17,7 @@
 #include "display.h"
 
 #define SAMPLING_DELAY 10
-#define ALARM_THRESHOLD 35
+#define ALARM_THRESHOLD 30
 #define EYE_DELAY 2
 #define CHANGE_TEMP 1000
 extern float temperature_to_display;
@@ -55,11 +55,14 @@ int main(void){
 	gpioInit();
 	ADCInit();
 	ChannelInit();
-	
+		
 	// Infinite run loop
 	while (1) {
-		if(MS_PASSED) {
-			MS_PASSED=0;
+		
+		if (MS_PASSED) {
+			//RAISE_ALARM_SEM++;
+			//printf("RAISE_ALARM_SEM: %d\n", RAISE_ALARM_SEM);
+			
 			convert_counter++;
 			display_counter++;
 			temperature_counter++;
@@ -73,18 +76,25 @@ int main(void){
 				if (NOW_CHANGE_DISPLAY > 3) NOW_CHANGE_DISPLAY = 0;
 			}
 			if (temperature_counter == CHANGE_TEMP){
-				temperature_counter= 0;
+				temperature_counter = 0;
 				NOW_CHANGE_TEMP = 1;
 			}
+			MS_PASSED=0;
 		}
+		
+		
 		if (NOW_CONVERT) poll();
+		
 		updateDisplay();
+		
 		if (ALARM) {
-			if (!(RAISE_ALARM_SEM % 512)) {
-				ALARM_LED++;
-			}
+//			if (RAISE_ALARM_SEM % 1000 == 0) {
+//				ALARM_LED++;
+//			}
 			alarm_on();
-		} else{
+		} 
+		
+		else{
 			alarm_off();
 		}
 	}

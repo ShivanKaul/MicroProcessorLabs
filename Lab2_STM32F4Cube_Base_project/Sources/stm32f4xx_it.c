@@ -166,7 +166,9 @@ void SysTick_Handler(void)
 		HAL_IncTick();
 		MS_PASSED = 1;
 		RAISE_ALARM_SEM++;
-				
+	  if (RAISE_ALARM_SEM % 250 == 0) {
+			ALARM_LED++;
+		}
 }
 
 /******************************************************************************/
