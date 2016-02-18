@@ -1,16 +1,24 @@
 #include "display.h"
 
+int NOW_CHANGE_DISPLAY = 0;
 
 // Update 7 segment display
 void updateDisplay(float num) {
-	
+	int temperature_padded = (int) (num*10),i,place=100,digit;
+	for (i =2; i<=0;i++){
+		while(!NOW_CHANGE_DISPLAY); //wait for signal to change display
+		NOW_CHANGE_DISPLAY=0;
+		
+		digit=temperature_padded/place;
+		GPIOB->ODR = getRegisterLEDValue(digit,i);
+	}
 	
 }
-#define LED_EN_0 GPIO_PIN_4
-#define LED_EN_1 GPIO_PIN_5
-#define LED_EN_2 GPIO_PIN_6
-#define LED_DEG GPIO_PIN_12
 
+#define LED_EN_0 GPIO_PIN_6 
+#define LED_EN_1 GPIO_PIN_4 
+#define LED_EN_2 GPIO_PIN_5 
+#define LED_DEG GPIO_PIN_12
 
 #define LED_A GPIO_PIN_7
 #define LED_B GPIO_PIN_9
@@ -69,3 +77,4 @@ uint32_t getRegisterLEDValue(int num,int place) {
 	return val;
 	
 }
+

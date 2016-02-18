@@ -17,6 +17,7 @@
 #include "display.h"
 
 #define INIT {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+#define SAMPLING_DELAY 10
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef ADC1_Handle;
@@ -25,21 +26,19 @@ void SystemClock_Config	(void);
 
 
 int g_MeasurementNumber;
-int NOW_CONVERT;
-	
+int NOW_CONVERT=0;
+uint32_t last_sample_time, last_display_time;	
 void poll(void);
-void updateDisplay(float);
 
-int main(void)
-{
-	
+
+int main(void){
   /* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 	/* Configure the system clock */
   SystemClock_Config();
-	
-	NOW_CONVERT = 0;
+	last_sample_time= last_display_time= HAL_GetTick();//initializing ticks for clock;
+	//NOW_CONVERT = 0;
 	
 	// Init all
 	gpioInit();
@@ -52,30 +51,25 @@ int main(void)
 	}
 }
 
-
-
 // Get values from temperature sensor
 void poll() {
-	float g_ADCValue;
+	float  voltage, temperature;
 	NOW_CONVERT = 0;
 	HAL_ADC_Start(&ADC1_Handle);
 	if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK)
 	{
-			g_ADCValue = HAL_ADC_GetValue(&ADC1_Handle);
-			g_ADCValue *= (3000.0f/0xfff); //getting resolution
-			g_ADCValue -= 760.0f;
-			g_ADCValue /= 2.5f;
-			g_ADCValue += 25.0f;
-			printf("%f\n", g_ADCValue);
-			updateDisplay(g_ADCValue);
+			voltage = HAL_ADC_GetValue(&ADC1_Handle);
+			voltage *= (3000.0f/0xfff); //getting resolution in milivolts
+			temperature = (voltage -760.0f) / 2.5f; // normalizing around 25C voltage and  average slope 
+			temperature += 25.0f;
+			printf("%f\n", temperature);
+			updateDisplay(temperature);
+			if (temperature>60){
+				alarm();
+			}
 			//g_MeasurementNumber++;
 	}
 }
-
-
-
-
-
 
 /** System Clock Configuration */
 void SystemClock_Config(void){
