@@ -156,9 +156,12 @@ void PendSV_Handler(void)
 
 extern int NOW_CONVERT;
 extern int NOW_CHANGE_DISPLAY;
+extern int NOW_CHANGE_TEMP;
 extern uint32_t last_sample_time;
-extern uint32_t last_display_time;
-#define EYE_DELAY 200
+uint32_t last_change_time;
+uint32_t last_display_time;
+#define EYE_DELAY 2
+#define CHANGE_TEMP 1000
 #define SAMPLE_DELAY 10
 void SysTick_Handler(void)
 {		
@@ -168,10 +171,13 @@ void SysTick_Handler(void)
 			NOW_CONVERT = 1;
 			last_sample_time = HAL_GetTick();
 		}
-		
 		if (HAL_GetTick() - last_display_time >= EYE_DELAY){
-			NOW_CHANGE_DISPLAY = 1;
-			last_display_time = HAL_GetTick();
+			NOW_CHANGE_DISPLAY++;
+			if (NOW_CHANGE_DISPLAY > 3) NOW_CHANGE_DISPLAY = 0;
+		}
+		if (HAL_GetTick() - last_change_time >= CHANGE_TEMP){
+			NOW_CHANGE_TEMP = 1;
+			last_change_time = HAL_GetTick();
 		}
 		
 }

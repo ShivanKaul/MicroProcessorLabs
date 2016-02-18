@@ -19,6 +19,9 @@
 #define INIT {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define SAMPLING_DELAY 10
 #define ALARM_THRESHOLD 35
+extern float temperature_to_display;
+extern int NOW_CHANGE_DISPLAY;
+
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef ADC1_Handle;
@@ -28,7 +31,8 @@ void SystemClock_Config	(void);
 
 int g_MeasurementNumber;
 int NOW_CONVERT=0;
-uint32_t last_sample_time, last_display_time;	
+int NOW_CHANGE_TEMP=0;
+uint32_t last_sample_time;	
 void poll(void);
 
 
@@ -38,7 +42,7 @@ int main(void){
   HAL_Init();
 	/* Configure the system clock */
   SystemClock_Config();
-	last_sample_time= last_display_time= HAL_GetTick();//initializing ticks for clock;
+	last_sample_time=  HAL_GetTick();//initializing ticks for clock;
 	//NOW_CONVERT = 0;
 	
 	// Init all
@@ -49,6 +53,7 @@ int main(void){
 	// Infinite run loop
 	while (1) {
 		if (NOW_CONVERT) poll();
+		updateDisplay();
 	}
 }
 
@@ -64,7 +69,11 @@ void poll() {
 			temperature = (voltage -760.0f) / 2.5f; // normalizing around 25C voltage and  average slope 
 			temperature += 25.0f;
 			printf("%f\n", temperature);
-			updateDisplay(temperature);
+			
+			if (NOW_CHANGE_TEMP) {
+				temperature_to_display = temperature;
+				NOW_CHANGE_TEMP=0;
+			}
 			if (temperature > ALARM_THRESHOLD){
 				alarm();
 			}

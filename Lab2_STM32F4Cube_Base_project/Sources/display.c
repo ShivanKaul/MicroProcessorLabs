@@ -1,22 +1,19 @@
 #include "display.h"
 
 int NOW_CHANGE_DISPLAY = 0;
-
+float temperature_to_display;
 // Update 7 segment display
-void updateDisplay(float num) {
-	int temperature_padded = (int) (num*10), 
+void updateDisplay(void) {
+	int temperature_padded = (int) (temperature_to_display*10), 
 		i,
 		digit;
-	
-	for (i = 0; i < 3 ; i++){
-		while(!NOW_CHANGE_DISPLAY); //wait for signal to change display
-		NOW_CHANGE_DISPLAY=0;
-		
-		digit = temperature_padded % 10;
+	for(i=0; i< NOW_CHANGE_DISPLAY; i++){
 		temperature_padded /= 10;
-		GPIOB->ODR = getRegisterLEDValue(digit,i);
-		
 	}
+	digit = temperature_padded % 10;
+	
+	GPIOB->ODR = getRegisterLEDValue(digit,NOW_CHANGE_DISPLAY);
+	
 	
 }
 
@@ -52,7 +49,7 @@ uint32_t getRegisterLEDValue(int num,int place) {
 			val |= LED_A|LED_B|LED_C|LED_D|LED_G;
 			break;
 		case 4:
-			val |= LED_B|LED_C|LED_D|LED_F|LED_G;
+			val |= LED_B|LED_C|LED_F|LED_G;
 			break;
 		case 5:
 			val |= LED_A|LED_C|LED_D|LED_F|LED_G;
