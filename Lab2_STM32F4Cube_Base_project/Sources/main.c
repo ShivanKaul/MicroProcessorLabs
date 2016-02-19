@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "init.h"
 #include "display.h"
+#include "kalman.h"
 
 #define SAMPLING_DELAY 10
 #define ALARM_THRESHOLD 30
@@ -42,6 +43,7 @@ uint32_t RAISE_ALARM_SEM = 0;
 uint32_t ALARM_LED = 0;
 extern int MS_PASSED;
 
+kalman_state glob= INIT_KALMAN;
 
 int main(void){
   /* MCU Configuration----------------------------------------------------------*/
@@ -50,7 +52,7 @@ int main(void){
   HAL_Init();
 	/* Configure the system clock */
   SystemClock_Config();
-	
+	//glob = INIT_KALMAN;
 	// Init all
 	gpioInit();
 	ADCInit();
@@ -102,7 +104,7 @@ int main(void){
 
 // Get values from temperature sensor
 void poll() {
-	float  voltage, temperature;
+	float  voltage, temperature, good;
 	NOW_CONVERT = 0;
 	HAL_ADC_Start(&ADC1_Handle);
 	if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK)
@@ -111,10 +113,12 @@ void poll() {
 			voltage *= (3000.0f/0xfff); //getting resolution in milivolts
 			temperature = (voltage -760.0f) / 2.5f; // normalizing around 25C voltage and  average slope 
 			temperature += 25.0f;
-			printf("%f\n", temperature);
 			
+			Kalmanfilter_C(&temperature, &good, &glob, 1);
+		
+		printf("%f\n", good);
 			if (NOW_CHANGE_TEMP) {
-				temperature_to_display = temperature;
+				temperature_to_display = good;
 				NOW_CHANGE_TEMP=0;
 			}
 			if (temperature > ALARM_THRESHOLD){
