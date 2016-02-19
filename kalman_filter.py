@@ -20,10 +20,3 @@ class KalmanFilter(object):
 		return self.x
 
 
-k = KalmanFilter()
-l1 = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0]
-l2 = []
-for l in l1:
-	l2.append(k.update(l))
-
-print l2

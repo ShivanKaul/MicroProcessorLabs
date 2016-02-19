@@ -1,5 +1,5 @@
-IN_FILE = "Lab2_STM32F4Cube_Base_project/ohai.txt"
-OUT_FILE = "ohai.py"
+IN_FILE = "Lab2_STM32F4Cube_Base_project/samples.txt"
+OUT_FILE = "sam.py"
 
 ifile = open(IN_FILE,"rU")
 ofile = open(OUT_FILE,"w+")
@@ -10,4 +10,4 @@ for i in ifile.read().splitlines():
   except:
     pass
 
-print >>ofile,"olist=", olist
+print >>ofile,"samples=", olist
