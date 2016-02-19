@@ -163,9 +163,11 @@ extern uint32_t RAISE_ALARM_SEM;
 
 void SysTick_Handler(void)
 {		
-		HAL_IncTick();
+		// Millisecond passed
 		MS_PASSED = 1;
+		// Alarm counter
 		RAISE_ALARM_SEM++;
+		// Every 250 ticks of systick, move to next LED.
 	  if (RAISE_ALARM_SEM % 250 == 0) {
 			ALARM_LED++;
 		}

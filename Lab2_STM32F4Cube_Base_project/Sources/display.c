@@ -7,7 +7,7 @@ extern int RAISE_ALARM_SEM;
 float temperature_to_display;
 // Update 7 segment display
 void updateDisplay(void) {
-	int temperature_padded = (int) (temperature_to_display*10), 
+	int temperature_padded = (int) (temperature_to_display * 10), 
 		i,
 		digit;
 	for(i=0; i< NOW_CHANGE_DISPLAY; i++){
@@ -16,8 +16,6 @@ void updateDisplay(void) {
 	digit = temperature_padded % 10;
 	
 	GPIOB->ODR = getRegisterLEDValue(digit,NOW_CHANGE_DISPLAY);
-	
-	
 }
 
 #define LED_EN_0 GPIO_PIN_6 
@@ -107,8 +105,8 @@ void alarm_on(void){
 			GPIOD->ODR = LED_Blue;
 			break;
 	}
-	//GPIOD->ODR = 0;
 }
+
 void alarm_off(void){
 	GPIOD->ODR = 0;
 }

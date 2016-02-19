@@ -18,7 +18,7 @@
 #include "kalman.h"
 
 #define SAMPLING_DELAY 10
-#define ALARM_THRESHOLD 42
+#define ALARM_THRESHOLD 37
 #define EYE_DELAY 2
 #define CHANGE_TEMP 1000
 extern float temperature_to_display;
@@ -31,9 +31,8 @@ ADC_HandleTypeDef ADC1_Handle;
 void SystemClock_Config	(void);
 #define SAMPLE_DELAY 10
 
-int g_MeasurementNumber;
-int NOW_CONVERT=0;
-int NOW_CHANGE_TEMP=0;
+int NOW_CONVERT = 0;
+int NOW_CHANGE_TEMP = 0;
 extern int NOW_CHANGE_DISPLAY;
 
 uint32_t last_sample_time;	
@@ -43,17 +42,18 @@ uint32_t RAISE_ALARM_SEM = 0;
 uint32_t ALARM_LED = 0;
 extern int MS_PASSED;
 
-kalman_state glob= INIT_KALMAN;
+kalman_state KALMAN_STATE = INIT_KALMAN;
 
 int main(void){
   /* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	uint32_t convert_counter=0, temperature_counter=0, display_counter=0;
+	uint32_t convert_counter = 0, temperature_counter = 0, display_counter = 0;
   HAL_Init();
 	/* Configure the system clock */
+	// Set to 168 MHz
   SystemClock_Config();
-	//glob = INIT_KALMAN;
-	// Init all
+	
+	// Init
 	gpioInit();
 	ADCInit();
 	ChannelInit();
@@ -61,42 +61,43 @@ int main(void){
 	// Infinite run loop
 	while (1) {
 		
-		if (MS_PASSED) {
-			//RAISE_ALARM_SEM++;
-			//printf("RAISE_ALARM_SEM: %d\n", RAISE_ALARM_SEM);
+		if (MS_PASSED) { // if systicked
 			
+			// We have 3 counters to set 3 different flags. 
+			// Convert counter to slice the systick to the appropriate freq : 10 ms, so that we have a frequency
+			// of 100 Hz.
 			convert_counter++;
+			// Display counter to change display every 2 ms. 
 			display_counter++;
+			// Change temperature to next val.
 			temperature_counter++;
+			
 			if (convert_counter == SAMPLE_DELAY){
-				convert_counter= 0;
-				NOW_CONVERT=1;
+				convert_counter = 0;
+				NOW_CONVERT = 1;
 			}
 			if (display_counter == EYE_DELAY){
-				display_counter= 0;
+				display_counter = 0;
 				NOW_CHANGE_DISPLAY++;
-				if (NOW_CHANGE_DISPLAY > 3) NOW_CHANGE_DISPLAY = 0;
+				if (NOW_CHANGE_DISPLAY > 3) NOW_CHANGE_DISPLAY = 0; // Wrap around for 3 digits
 			}
-			if (temperature_counter == CHANGE_TEMP){
+			if (temperature_counter == CHANGE_TEMP) {
 				temperature_counter = 0;
 				NOW_CHANGE_TEMP = 1;
 			}
-			MS_PASSED=0;
+			MS_PASSED = 0; // Reset systick variable
 		}
 		
-		
-		if (NOW_CONVERT) poll();
+		if (NOW_CONVERT) poll(); // Convert temperature value
 		
 		updateDisplay();
 		
 		if (ALARM) {
-//			if (RAISE_ALARM_SEM % 1000 == 0) {
-//				ALARM_LED++;
-//			}
 			alarm_on();
 		} 
 		
-		else{
+		else {
+			// If < alarm temperature, shut off LEDs
 			alarm_off();
 		}
 	}
@@ -104,27 +105,27 @@ int main(void){
 
 // Get values from temperature sensor
 void poll() {
-	float  voltage, temperature, good;
+	float  voltage, temperature, filtered_temp;
 	NOW_CONVERT = 0;
 	HAL_ADC_Start(&ADC1_Handle);
 	if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK)
 	{
 			voltage = HAL_ADC_GetValue(&ADC1_Handle);
-			voltage *= (3000.0f/0xfff); //getting resolution in milivolts
+			voltage *= (3000.0f/0xfff); // getting resolution in mV
 			temperature = (voltage -760.0f) / 2.5f; // normalizing around 25C voltage and  average slope 
 			temperature += 25.0f;
 			
-			Kalmanfilter_C(&temperature, &good, &glob, 1);
+			// Use Kalman filter to get filtered value and store in 'filtered_temp'
+			Kalmanfilter_C(&temperature, &filtered_temp, &KALMAN_STATE, 1);
 		
-		printf("%f\n", good);
+			printf("%f\n", filtered_temp);
 			if (NOW_CHANGE_TEMP) {
-				temperature_to_display = good;
-				NOW_CHANGE_TEMP=0;
+				temperature_to_display = filtered_temp;
+				NOW_CHANGE_TEMP = 0;
 			}
-			if (good > ALARM_THRESHOLD){
+			if (filtered_temp > ALARM_THRESHOLD){
 				ALARM = 1;
 			} else ALARM = 0;
-			//g_MeasurementNumber++;
 	}
 }
 
