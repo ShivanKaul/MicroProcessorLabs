@@ -18,7 +18,7 @@
 #include "kalman.h"
 
 #define SAMPLING_DELAY 10
-#define ALARM_THRESHOLD 30
+#define ALARM_THRESHOLD 42
 #define EYE_DELAY 2
 #define CHANGE_TEMP 1000
 extern float temperature_to_display;
@@ -121,7 +121,7 @@ void poll() {
 				temperature_to_display = good;
 				NOW_CHANGE_TEMP=0;
 			}
-			if (temperature > ALARM_THRESHOLD){
+			if (good > ALARM_THRESHOLD){
 				ALARM = 1;
 			} else ALARM = 0;
 			//g_MeasurementNumber++;
