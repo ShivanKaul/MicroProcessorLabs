@@ -1,7 +1,19 @@
+/**
+ * @brief Initialization file - initializes GPIO, ADC, Channel
+ * @author Yusaira Khan 
+ * @author Shivan Kaul
+ */
+
 #include "init.h"
 #include "stm32f4xx_hal.h"
-extern ADC_HandleTypeDef ADC1_Handle;
+extern ADC_HandleTypeDef ADC1_Handle; // Defined in main.c
 
+/**
+* @brief Initialize GPIOs - GPIOB for display LEDs and GPIOD for alarm LEDs
+* @file init.c
+* @param None
+* @retval None
+*/
 void gpioInit(void) {
 	GPIO_InitTypeDef GPIO_InitStructure, GPIO_InitStructureAlarm;
 	
@@ -23,6 +35,12 @@ void gpioInit(void) {
 	HAL_GPIO_Init(GPIOD, &GPIO_InitStructureAlarm);
 }
 
+/**
+* @brief Initialize ADC
+* @file init.c
+* @param None
+* @retval None
+*/
 void ADCInit(void) {
 	// ADC Init
 	__HAL_RCC_ADC1_CLK_ENABLE(); // Clock enable
@@ -46,6 +64,12 @@ void ADCInit(void) {
 	}
 }
 
+/**
+* @brief Initialize Channel - we use channel 16, which is hard set to be temperature sensor
+* @file init.c
+* @param None
+* @retval None
+*/
 void ChannelInit(void) {
 	// Channel
 	ADC_ChannelConfTypeDef ADC_Channel;

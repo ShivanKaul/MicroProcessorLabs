@@ -1,13 +1,8 @@
 /**
-  ******************************************************************************
-  * File Name          : main.c
-  * Description        : A program which showcases ADC and TIM3 under the new firmware
-	                       The ADC
-	* Author						 : Ashraf Suyyagh
-	* Version            : 1.0.0
-	* Date							 : January 14th, 2016
-  ******************************************************************************
-  */
+ * @brief Main file
+ * @author Yusaira Khan 
+ * @author Shivan Kaul
+ */
 	
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
@@ -21,27 +16,26 @@
 #define ALARM_THRESHOLD 37
 #define EYE_DELAY 2
 #define CHANGE_TEMP 1000
-extern float temperature_to_display;
-extern int NOW_CHANGE_DISPLAY;
-
+#define SAMPLE_DELAY 10
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef ADC1_Handle;
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config	(void);
-#define SAMPLE_DELAY 10
+extern float temperature_to_display; // defined in display.c
+extern int NOW_CHANGE_DISPLAY; // defined in display.c
+extern int MS_PASSED; // defined by systick
 
+// Flags
 int NOW_CONVERT = 0;
 int NOW_CHANGE_TEMP = 0;
-extern int NOW_CHANGE_DISPLAY;
-
-uint32_t last_sample_time;	
-void poll(void);
 uint32_t ALARM = 0;
 uint32_t RAISE_ALARM_SEM = 0;
 uint32_t ALARM_LED = 0;
-extern int MS_PASSED;
 
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config	(void);
+void poll(void);
+
+// Initialize Kalman State
 kalman_state KALMAN_STATE = INIT_KALMAN;
 
 int main(void){
@@ -72,38 +66,48 @@ int main(void){
 			// Change temperature to next val.
 			temperature_counter++;
 			
+			// Convert temperature flag setting
 			if (convert_counter == SAMPLE_DELAY){
 				convert_counter = 0;
 				NOW_CONVERT = 1;
 			}
+			// Display temperature on LED flag setting
 			if (display_counter == EYE_DELAY){
 				display_counter = 0;
 				NOW_CHANGE_DISPLAY++;
 				if (NOW_CHANGE_DISPLAY > 3) NOW_CHANGE_DISPLAY = 0; // Wrap around for 3 digits
 			}
+			// Change temperature flag setting
 			if (temperature_counter == CHANGE_TEMP) {
 				temperature_counter = 0;
 				NOW_CHANGE_TEMP = 1;
 			}
+			
 			MS_PASSED = 0; // Reset systick variable
 		}
 		
 		if (NOW_CONVERT) poll(); // Convert temperature value
 		
-		updateDisplay();
+		updateDisplay(); // Update display
 		
+		// If alarm flag is set by poll subroutine
 		if (ALARM) {
 			alarm_on();
 		} 
-		
+		// If < alarm temperature, shut off LEDs
 		else {
-			// If < alarm temperature, shut off LEDs
 			alarm_off();
 		}
 	}
 }
 
-// Get values from temperature sensor
+/**
+* @brief Polls the ADC for temperature digitization, and filters using Kalman filter
+* 		> Set alarm if temperature above threshold
+* @file main.c
+* @param None
+* @retval None
+*/
 void poll() {
 	float  voltage, temperature, filtered_temp;
 	NOW_CONVERT = 0;
@@ -129,7 +133,13 @@ void poll() {
 	}
 }
 
-/** System Clock Configuration */
+/**
+* @brief System Clock Configuration
+* 		> Sets Systick frequency
+* @file main.c
+* @param None
+* @retval None
+*/
 void SystemClock_Config(void){
 
   RCC_OscInitTypeDef RCC_OscInitStruct;

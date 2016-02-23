@@ -1,23 +1,19 @@
+/**
+ * @brief Display file - handles all display logic
+ * @author Yusaira Khan 
+ * @author Shivan Kaul
+ */
+
 #include "display.h"
 
+// Flags
 int NOW_CHANGE_DISPLAY = 0;
 extern int ALARM_LED;
 int RAISE_ALARM = 0;
 extern int RAISE_ALARM_SEM;
 float temperature_to_display;
-// Update 7 segment display
-void updateDisplay(void) {
-	int temperature_padded = (int) (temperature_to_display * 10), 
-		i,
-		digit;
-	for(i=0; i< NOW_CHANGE_DISPLAY; i++){
-		temperature_padded /= 10;
-	}
-	digit = temperature_padded % 10;
-	
-	GPIOB->ODR = getRegisterLEDValue(digit,NOW_CHANGE_DISPLAY);
-}
 
+// Define statments, for prettier code
 #define LED_EN_0 GPIO_PIN_6 
 #define LED_EN_1 GPIO_PIN_4 
 #define LED_EN_2 GPIO_PIN_5 
@@ -38,7 +34,32 @@ void updateDisplay(void) {
 #define LED_Red GPIO_PIN_14
 #define LED_Blue GPIO_PIN_15
 
+/**
+* @brief Update the 7 segment display
+* @file display.c
+* @param None
+* @retval None
+*/
+void updateDisplay(void) {
+	int temperature_padded = (int) (temperature_to_display * 10), 
+		i,
+		digit;
+	// LED displaying logic
+	for(i=0; i< NOW_CHANGE_DISPLAY; i++){
+		temperature_padded /= 10;
+	}
+	digit = temperature_padded % 10;
+	
+	GPIOB->ODR = getRegisterLEDValue(digit,NOW_CHANGE_DISPLAY);
+}
 
+/**
+* @brief Get the register LED value
+* @file display.c
+* @param Number to convert
+* @param Place to convert
+* @retval Register LED value
+*/
 uint32_t getRegisterLEDValue(int num,int place) {
 	uint32_t val=0;
 	val=LED_DEG;
@@ -90,6 +111,12 @@ uint32_t getRegisterLEDValue(int num,int place) {
 	
 }
 
+/**
+* @brief Set alarm on - flash LEDs on board
+* @file display.c
+* @param None
+* @retval None
+*/
 void alarm_on(void){
 	switch(ALARM_LED % 4) {
 		case 0: 
@@ -107,6 +134,12 @@ void alarm_on(void){
 	}
 }
 
+/**
+* @brief Switch off alarm LEDs
+* @file display.c
+* @param None
+* @retval None
+*/
 void alarm_off(void){
 	GPIOD->ODR = 0;
 }
