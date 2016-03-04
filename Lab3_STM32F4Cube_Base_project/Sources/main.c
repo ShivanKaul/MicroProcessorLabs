@@ -11,9 +11,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
+#include "stm32f4xx_hal_spi.h"
+#include "init.h"
 #include "lis3dsh.h"
 
 /* Private variables ---------------------------------------------------------*/
+LIS3DSH_InitTypeDef LISInitStruct;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
@@ -28,8 +31,17 @@ int main(void)
   SystemClock_Config();
 	
   /* Initialize all configured peripherals */
+	// Initialize accelerometer
+	LISInit();
+	
+	// Initialize GPIOs
+	gpioInit();
+	
+	
+	
 
 	while (1){
+		
 	}
 }
 
