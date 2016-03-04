@@ -8,8 +8,8 @@
 #include "stm32f4xx_hal.h"
 #include "lis3dsh.h"
 
-extern LIS3DSH_InitTypeDef LISInitStruct; // Defined in main.c
-
+LIS3DSH_InitTypeDef LISInitStruct; // Defined in main.c
+LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 
 /**
 * @brief Initialize GPIOs - GPIOB for display LEDs and GPIOD for alarm LEDs
@@ -18,24 +18,19 @@ extern LIS3DSH_InitTypeDef LISInitStruct; // Defined in main.c
 * @retval None
 */
 void gpioInit(void) {
-	GPIO_InitTypeDef GPIO_InitStructure, GPIO_InitStructureAlarm;
+	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	// GPIO clock for LEDs
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	GPIO_InitStructure.Pin = GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15
-	| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 ;
+
+	GPIO_InitStructure.Pin = GPIO_PIN_0 ;
 	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
-	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStructure.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStructure.Pull = GPIO_PULLDOWN;
+	HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
-	// GPIO clock for alarm LEDs
-	__HAL_RCC_GPIOD_CLK_ENABLE();
-	GPIO_InitStructureAlarm.Pin = GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15 ;
-	GPIO_InitStructureAlarm.Speed = GPIO_SPEED_FREQ_LOW;
-	GPIO_InitStructureAlarm.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStructureAlarm.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStructureAlarm);
+	HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
 }
 
 /**
@@ -63,5 +58,12 @@ void LISInit(void) {
 	// TODO: http://www.edn.com/design/analog/4390843/1/The-embedded-self-test-feature-in-MEMS-inertial-sensors
 	LISInitStruct.Self_Test = LIS3DSH_SELFTEST_NORMAL;
 	LIS3DSH_Init(&LISInitStruct);
+	
+	LISIntConfig.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
+	LISIntConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
+	LISIntConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_LATCHED;
+	
+	
+	LIS3DSH_DataReadyInterruptConfig(&LISIntConfig);
 }
 

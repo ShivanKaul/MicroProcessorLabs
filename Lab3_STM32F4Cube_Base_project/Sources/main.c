@@ -16,7 +16,7 @@
 #include "lis3dsh.h"
 
 /* Private variables ---------------------------------------------------------*/
-LIS3DSH_InitTypeDef LISInitStruct;
+//LIS3DSH_InitTypeDef LISInitStruct;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
