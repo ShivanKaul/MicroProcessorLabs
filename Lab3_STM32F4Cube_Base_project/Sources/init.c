@@ -7,6 +7,7 @@
 #include "init.h"
 #include "stm32f4xx_hal.h"
 #include "lis3dsh.h"
+#include "stdio.h"
 
 LIS3DSH_InitTypeDef LISInitStruct; 
 LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
@@ -45,6 +46,7 @@ void LISInit(void) {
 	// frequencies > 2x our sampling rate which would lead to 
 	// aliasing our filtered out.
 	// This is the minimum that is available to us
+	uint8_t offsetX, offsetY, offsetZ;
 	LISInitStruct.AA_Filter_BW = LIS3DSH_AA_BW_50;
 	// We want to enable all axes
 	LISInitStruct.Axes_Enable = LIS3DSH_XYZ_ENABLE;
@@ -64,5 +66,10 @@ void LISInit(void) {
 	LISIntConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
 	LISIntConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_LATCHED;
 	LIS3DSH_DataReadyInterruptConfig(&LISIntConfig);
+	
+	LIS3DSH_Read(&offsetX, LIS3DSH_OFF_X, 1);
+  LIS3DSH_Read(&offsetY, LIS3DSH_OFF_Y, 1);
+  LIS3DSH_Read(&offsetZ, LIS3DSH_OFF_Z, 1);
+	printf("x:%d,y:%d,z:%d\n",offsetX,offsetY,offsetZ);
 }
 
