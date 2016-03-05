@@ -41,6 +41,8 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "stm32f4xx_hal.h"
+#include "stdio.h"
+#include "lis3dsh.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -175,7 +177,11 @@ void EXTI0_IRQHandler(void){
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-
+	if (GPIO_Pin==GPIO_PIN_0){
+		float acc[3];
+		LIS3DSH_ReadACC(acc);
+		printf("x:%f y:%f z:%f\n",acc[0],acc[1],acc[2]);
+	}
 }
 /**
   * @}

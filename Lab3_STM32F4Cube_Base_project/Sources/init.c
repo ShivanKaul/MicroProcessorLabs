@@ -8,7 +8,7 @@
 #include "stm32f4xx_hal.h"
 #include "lis3dsh.h"
 
-LIS3DSH_InitTypeDef LISInitStruct; // Defined in main.c
+LIS3DSH_InitTypeDef LISInitStruct; 
 LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 
 /**

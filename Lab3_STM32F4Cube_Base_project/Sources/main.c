@@ -31,13 +31,10 @@ int main(void)
   SystemClock_Config();
 	
   /* Initialize all configured peripherals */
+		// Initialize GPIOs
+	gpioInit();
 	// Initialize accelerometer
 	LISInit();
-	
-	// Initialize GPIOs
-	gpioInit();
-	
-	
 	
 
 	while (1){
