@@ -178,9 +178,16 @@ void EXTI0_IRQHandler(void){
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
-		float acc[3];
-		LIS3DSH_ReadACC(acc);
-		printf("%f,%f,%f\n",acc[0],acc[1],acc[2]);
+		int16_t acc[3],i=0;
+		uint8_t l,h;
+		for(i=0;i<3;i++){
+			LIS3DSH_Read(&l, LIS3DSH_OUT_X_L+(2*i), 1);
+			LIS3DSH_Read(&h, LIS3DSH_OUT_X_L+(2*i+1), 1);
+			acc[i]= (int16_t)(l | h << 8);//(((int)h)<<8)+l;
+		}
+		
+		//LIS3DSH_ReadACC(acc);
+		printf("%d,%d,%d\n",acc[0],acc[1],acc[2]);
 	}
 }
 /**
