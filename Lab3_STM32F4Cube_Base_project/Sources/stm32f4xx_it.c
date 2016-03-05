@@ -180,7 +180,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
 		float acc[3];
 		LIS3DSH_ReadACC(acc);
-		printf("x:%f y:%f z:%f\n",acc[0],acc[1],acc[2]);
+		printf("%f,%f,%f\n",acc[0],acc[1],acc[2]);
 	}
 }
 /**
