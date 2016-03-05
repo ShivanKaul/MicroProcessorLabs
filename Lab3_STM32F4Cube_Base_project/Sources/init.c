@@ -59,11 +59,10 @@ void LISInit(void) {
 	LISInitStruct.Self_Test = LIS3DSH_SELFTEST_NORMAL;
 	LIS3DSH_Init(&LISInitStruct);
 	
+	
 	LISIntConfig.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
 	LISIntConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
 	LISIntConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_LATCHED;
-	
-	
 	LIS3DSH_DataReadyInterruptConfig(&LISIntConfig);
 }
 
