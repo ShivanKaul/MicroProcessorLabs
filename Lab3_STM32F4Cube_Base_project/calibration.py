@@ -25,15 +25,16 @@ import numpy as np
 #     #for y in x:
 #     l=len((list(x)))
 #     s=sums[i]
-#     print(s[0]/l,s[1]/l,s[2]/l)
-
-    #print("]")
-res=[[105.58301899065407,1032.4593908847346,136.0305700996885],
-[-1022.4595920641407,4.06886006413994,3.2426035043731782],
+#     print(s[0]//l,s[1]//l,s[2]//l)
+#
+#     print("]")
+res=[[-865,16905,836],
+[-16794,-182,223],
 [1044.7821080289384,0.7486185897435905,42.88906078525642],
-[-59.751989731292504,-1048.452440343537,25.557132680272098],
-[17.94565776444444,4.200595555555557,1073.2743961511105],
-[17.938959349593492,49.095081235772334,-963.5850147804882]]
+[17095,-18,1128],
+[-369,-17207,637],
+     [254,-187,17592],
+[356,-255,-15806]]
 
 resn = np.asarray(res)
 print(resn)
@@ -49,11 +50,15 @@ outy2 = res[2][1]
 outy3 = res[3][1]
 
 
-offx = (outx0 + outx1 + outx2 + outx3)/4
-offy = (outy0 + outy1 + outy2 + outy3)/4
-sensx = (outx2 - outx1)/2
-cxy =  (outx0 - outx3)/(2*sensx)
-sensy = (outy0 - outy3)/2
-cyx =  (outy2 - outy1)/(2*sensy)
+offx = (outx0 + outx1 + outx2 + outx3)//4
+offy = (outy0 + outy1 + outy2 + outy3)//4
+sensx = (outx2 - outx1)//2
+cxy =  (outx0 - outx3)//(2*sensx)
+sensy = (outy0 - outy3)//2
+cyx =  (outy2 - outy1)//(2*sensy)
 
-outx = offx + sensx *
+print(offx,offy) #120 4176
+print(sensx,sensy) #8919 8461
+print(cxy,cyx) #-2 0
+
+#outx = offx + sensx *
