@@ -19,19 +19,20 @@ LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 * @retval None
 */
 void gpioInit(void) {
-	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitTypeDef GPIO_Init_Acc, GPIO_Init_Keypad_Input,GPIO_Init_Keypad_Output ;
 	
 	// GPIO clock for LEDs
 
-	GPIO_InitStructure.Pin = GPIO_PIN_0 ;
-	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_LOW;
-	GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
-	GPIO_InitStructure.Pull = GPIO_PULLDOWN;
-	HAL_GPIO_Init(GPIOE, &GPIO_InitStructure);
+	GPIO_Init_Acc.Pin = GPIO_PIN_0 ;
+	GPIO_Init_Acc.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_Init_Acc.Mode = GPIO_MODE_IT_RISING;
+	GPIO_Init_Acc.Pull = GPIO_PULLDOWN;
+	HAL_GPIO_Init(GPIOE, &GPIO_Init_Acc);
 	
 	HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
+	
 }
 
 /**
@@ -64,7 +65,7 @@ void LISInit(void) {
 	
 	LISIntConfig.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
 	LISIntConfig.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
-	LISIntConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_LATCHED;
+	LISIntConfig.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;
 	LIS3DSH_DataReadyInterruptConfig(&LISIntConfig);
 	
 	LIS3DSH_Read(&offsetX, LIS3DSH_OFF_X, 1);

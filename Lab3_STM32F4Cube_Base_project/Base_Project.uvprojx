@@ -500,6 +500,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\init.c</FilePath>
             </File>
+            <File>
+              <FileName>keypad.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\keypad.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
