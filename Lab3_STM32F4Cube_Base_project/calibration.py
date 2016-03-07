@@ -116,6 +116,8 @@ def display_graphs(arrays, filtered_arrays, sums):
 
 
 def solveForX(w, Y):
+    # Check following link for formula:
+    # https://www.dropbox.com/s/qnzay1dfxjkmftk/Screen%20Shot%202016-03-07%20at%202.09.35%20PM.png?dl=0
     return np.dot(np.dot(inv(np.dot(w.transpose(), w)), w.transpose()), Y)
 
 
