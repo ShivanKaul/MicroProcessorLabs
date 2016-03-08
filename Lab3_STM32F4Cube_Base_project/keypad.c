@@ -73,6 +73,6 @@ void setOutput(GPIO_InitTypeDef* Keypad_Output){
 	Keypad_Output->Mode = GPIO_MODE_OUTPUT_PP;
 	Keypad_Output->Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(keypadGPIO, Keypad_Output);
-	keypadGPIO->ODR &= (~GPIO_Init_Keypad_Row.Pin); //zeros in the row positions while outputting
-	keypadGPIO->ODR &= (~GPIO_Init_Keypad_Col.Pin); //zeros in the column poisions while outputting
+	keypadGPIO->ODR &= (~Keypad_Output->Pin); //zeros in the row positions while outputting
+	//keypadGPIO->ODR &= (~GPIO_Init_Keypad_Col.Pin); //zeros in the column poisions while outputting
 }
