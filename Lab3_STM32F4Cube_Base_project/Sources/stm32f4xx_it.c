@@ -150,7 +150,7 @@ void DebugMon_Handler(void)
 void PendSV_Handler(void)
 {
 }
-
+int MS_PASSED=0;
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None
@@ -158,6 +158,14 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
+			// Millisecond passed
+		MS_PASSED = 1;
+		// Alarm counter
+		//RAISE_ALARM_SEM++;
+		// Every 250 ticks of systick, move to next LED.
+	 // if (RAISE_ALARM_SEM % 250 == 0) {
+			//ALARM_LED++;
+		//}
 	HAL_IncTick();
 }
 
@@ -187,7 +195,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		}
 		
 		//LIS3DSH_ReadACC(acc);
-		printf("%d,%d,%d\n",acc[0],acc[1],acc[2]);
+		///printf("%d,%d,%d\n",acc[0],acc[1],acc[2]);
 	}
 }
 /**

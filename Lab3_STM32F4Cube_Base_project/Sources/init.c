@@ -19,7 +19,7 @@ LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 * @retval None
 */
 void gpioInit(void) {
-	GPIO_InitTypeDef GPIO_Init_Acc, GPIO_Init_Keypad_Input,GPIO_Init_Keypad_Output ;
+	GPIO_InitTypeDef GPIO_Init_Acc;//, GPIO_Init_Keypad_Input,GPIO_Init_Keypad_Output ;
 	
 	// GPIO clock for LEDs
 

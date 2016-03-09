@@ -14,15 +14,19 @@
 #include "stm32f4xx_hal_spi.h"
 #include "init.h"
 #include "lis3dsh.h"
+#include "keypad.h"
+#include "stdio.h"
 
 /* Private variables ---------------------------------------------------------*/
 //LIS3DSH_InitTypeDef LISInitStruct;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
-
+extern int MS_PASSED;
+int keypad_flag=0;
 int main(void)
 {	
+	int i;
   /* MCU Configuration----------------------------------------------------------*/
 
   HAL_Init();
@@ -33,12 +37,20 @@ int main(void)
   /* Initialize all configured peripherals */
 		// Initialize GPIOs
 	gpioInit();
+	init_keypad();
 	// Initialize accelerometer
 	LISInit();
-	
+
 
 	while (1){
-		
+		if(MS_PASSED){
+			
+			keypad_flag = !keypad_flag;
+			i=readButton();
+			if (i!=NOREAD)			printf("%d\n",i);	
+			//readButton();
+			
+		}
 	}
 }
 

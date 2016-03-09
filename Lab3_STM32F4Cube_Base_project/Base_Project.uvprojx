@@ -503,7 +503,7 @@
             <File>
               <FileName>keypad.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\keypad.c</FilePath>
+              <FilePath>.\Sources\keypad.c</FilePath>
             </File>
           </Files>
         </Group>
