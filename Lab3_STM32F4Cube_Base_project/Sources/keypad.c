@@ -32,8 +32,9 @@ void init_keypad(void){
 #define buttonD 0x707
 extern int keypad_flag;
 #define INITREAD 0
+#define DEBOUNCE_DELAY 1000
 uint16_t read =INITREAD;
-int no_debouncing_flag=1;
+int no_debouncing_flag=0;
 int debouncing_countdown=0;
 
 
@@ -46,7 +47,7 @@ uint8_t readButton(){
 		
 		//printf("%d\n",read);	
 		if (read!=(INITREAD|GPIO_Init_Keypad_Row.Pin)){//button press
-			if (no_debouncing_flag) {
+			if (!debouncing_countdown) {// not zero
 				setInput(&GPIO_Init_Keypad_Col);
 				setOutput	(&GPIO_Init_Keypad_Row);
 			} else {
@@ -57,7 +58,7 @@ uint8_t readButton(){
 		} else {
 			keypad_flag=!keypad_flag;
 			read=INITREAD;
-			no_debouncing_flag=1;
+			debouncing_countdown= debouncing_countdown<1 ? 0 : debouncing_countdown -1;
 		}
 		return NOREAD;
 	} else{
@@ -65,7 +66,7 @@ uint8_t readButton(){
 		read|= ((keypadGPIO->IDR)& GPIO_Init_Keypad_Col.Pin); //read only col pins and get all 0s
 		setInput(&GPIO_Init_Keypad_Row);
 		setOutput(&GPIO_Init_Keypad_Col);
-		no_debouncing_flag=0;
+		debouncing_countdown=DEBOUNCE_DELAY;
 		//printf("%d\n",read);	
 		temp =read;
 		read =INITREAD;
