@@ -16,16 +16,16 @@
 #include "lis3dsh.h"
 #include "keypad.h"
 #include "stdio.h"
-<<<<<<< HEAD
+
 #include "kalman.h"
-=======
+
 #include "math.h"
 
 
 /* Definitions ---------------------------------------------------------*/
 #define POSITIONING_AXIS 0
 #define ANGLE_RANGE 5
->>>>>>> d040dcc... Positioning WIP
+
 
 /* Private variables ---------------------------------------------------------*/
 //LIS3DSH_InitTypeDef LISInitStruct;
@@ -40,22 +40,18 @@ extern int MS_PASSED;
 int keypad_flag=0, display_flag=0;
 TIM_HandleTypeDef tim;
 float typed_angle, current_angle;
-<<<<<<< HEAD
-kalman_state kalman_x, kalman_y,kalman_z;
-=======
-int positioning_started = 0;
-float acc[3];
 
->>>>>>> d040dcc... Positioning WIP
+kalman_state kalman_x, kalman_y,kalman_z;
+
+int positioning_started = 0;
+float acc[3],out[4];
+
+
 int main(void)
 {	
 	int buttonPressed;
 	int targetDegrees;
   /* MCU Configuration----------------------------------------------------------*/
-<<<<<<< HEAD
-
-=======
->>>>>>> d040dcc... Positioning WIP
   HAL_Init();
 
   /* Configure the system clock */
