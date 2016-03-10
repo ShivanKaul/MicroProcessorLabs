@@ -14,19 +14,18 @@ int DISPLAY_DIGIT = 0;
 float acc_to_display;
 
 // Define statments, for prettier code
-#define LED_EN_0 GPIO_PIN_6 
-#define LED_EN_1 GPIO_PIN_4 
-#define LED_EN_2 GPIO_PIN_5 
-#define LED_DEG GPIO_PIN_12
+#define LED_EN_0 GPIO_PIN_7 /*pin 7*/
+#define LED_EN_1 GPIO_PIN_6 /*pin 2*/
+#define LED_EN_2 GPIO_PIN_5 /*pin 1*/
+#define LED_DEG GPIO_PIN_8 /*Pin 9*/
 
-#define LED_A GPIO_PIN_7
-#define LED_B GPIO_PIN_9
-#define LED_C GPIO_PIN_14
-#define LED_D GPIO_PIN_8
-#define LED_E GPIO_PIN_10
-#define LED_F GPIO_PIN_11
-#define LED_G GPIO_PIN_15
-#define LED_DP GPIO_PIN_13
+#define LED_A GPIO_PIN_15 /*Pin 14*/
+#define LED_B GPIO_PIN_13 /*Pin 16*/
+#define LED_C GPIO_PIN_11 /*Pin 13*/
+#define LED_D GPIO_PIN_14 /*Pin 3*/
+#define LED_E GPIO_PIN_12 /*Pin 5*/
+#define LED_F GPIO_PIN_10 /*Pin 11*/
+#define LED_G GPIO_PIN_9 /*Pin 15*/
 
 // AlarmLEDs
 #define LED_Green GPIO_PIN_12
