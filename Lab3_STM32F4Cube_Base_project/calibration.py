@@ -59,7 +59,7 @@ def run(filename):
                 sums.append((0, 0, 0))
                 current = arrays[-1]
                 current_filtered = filtered_arrays[-1]
-                initial_values = list((int(i) for i in readings[index + 1]))
+                initial_values = list((float(i) for i in readings[index + 1]))
                 x_Kalman = KalmanFilter(p=1000, r=50, q=0.1, k=0,
                                         initial_value=initial_values[0])
                 y_Kalman = KalmanFilter(p=1000, r=50, q=0.1, k=0,
@@ -122,21 +122,21 @@ def solveForX(w, Y):
 
 
 def calibrate(X, Y, Z, filtered_arrays):
-    Y0 = np.asarray([(0, -1, 0)] * len(X[0]))
-    Y1 = np.asarray([(1, 0, 0)] * len(X[1]))
-    Y2 = np.asarray([(-1, 0, 0)] * len(X[2]))
-    Y3 = np.asarray([(0, 1, 0)] * len(X[3]))
-    Y4 = np.asarray([(0, 0, -1)] * len(X[4]))
-    Y5 = np.asarray([(0, 0, 1)] * len(X[5]))
+    Y0 = np.asarray([(0, -1, 0)]) #* len(X[0]))
+    Y1 = np.asarray([(1, 0, 0)]) #* len(X[1]))
+    Y2 = np.asarray([(-1, 0, 0)]) #* len(X[2]))
+    Y3 = np.asarray([(0, 1, 0)])# * len(X[3]))
+    Y4 = np.asarray([(0, 0, -1)])# * len(X[4]))
+    Y5 = np.asarray([(0, 0, 1)])# * len(X[5]))
 
     Y = np.vstack((Y0, Y1, Y2, Y3, Y4, Y5))
-
-    w0 = np.asarray([(x, y, z, 1) for (x, y, z) in filtered_arrays[0]])
-    w1 = np.asarray([(x, y, z, 1) for (x, y, z) in filtered_arrays[1]])
-    w2 = np.asarray([(x, y, z, 1) for (x, y, z) in filtered_arrays[2]])
-    w3 = np.asarray([(x, y, z, 1) for (x, y, z) in filtered_arrays[3]])
-    w4 = np.asarray([(x, y, z, 1) for (x, y, z) in filtered_arrays[4]])
-    w5 = np.asarray([(x, y, z, 1) for (x, y, z) in filtered_arrays[5]])
+    sum0=sum1=sum2=sum3=sum4=sum5=(0,0,0)
+    w0 = np.asarray(xyzmeans(filtered_arrays[0]))
+    w1 = np.asarray(xyzmeans(filtered_arrays[1]))
+    w2 = np.asarray(xyzmeans(filtered_arrays[2]))
+    w3 = np.asarray(xyzmeans(filtered_arrays[3]))
+    w4 = np.asarray(xyzmeans(filtered_arrays[4]))
+    w5 = np.asarray(xyzmeans(filtered_arrays[5]))
 
     w = np.vstack((w0, w1, w2, w3, w4, w5))
 
@@ -144,6 +144,26 @@ def calibrate(X, Y, Z, filtered_arrays):
 
     print ('X is :')
     print (X)
-
+def xyzmeans(array):
+    xs=0
+    ys=0
+    zs=0
+    for x,y,z in array:
+        xs+=x
+        ys+=y
+        zs+=z
+    return (xs/len(array),ys/len(array),zs/len(array),1)
 # Start main loop
 run(filename="calibration.txt")
+#with means
+# [[ -4.76541983e-05  -2.76761579e-07  -3.52490485e-07]
+# [  2.45104913e-06  -9.59368470e-04   5.16623301e-05]
+# [ -2.34181711e-05  -2.14577670e-05  -9.78816908e-04]
+# [  1.98397753e-01   9.01443456e-03   5.32591158e-02]]
+
+#with all
+#[[ -3.79226121e-06  -1.62022318e-08  -2.70411389e-08]
+# [  9.33379973e-07  -9.59929934e-04   5.29055515e-05]
+# [ -2.69424607e-05  -2.24065231e-05  -9.78024138e-04]
+# [  3.56638753e-02   6.31073844e-03   5.08594589e-02]]
+
