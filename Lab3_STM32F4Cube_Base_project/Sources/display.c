@@ -7,7 +7,7 @@
 #include "display.h"
 
 // Flags
-int NOW_CHANGE_DISPLAY = 0;
+int DISPLAY_DIGIT = 0;
 //extern int ALARM_LED;
 //int RAISE_ALARM = 0;
 //extern int RAISE_ALARM_SEM;
@@ -50,7 +50,7 @@ void updateDisplay(void) {
 	}
 	digit = padded % 10;
 	
-	GPIOB->ODR = getRegisterLEDValue(digit,NOW_CHANGE_DISPLAY);
+	GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT);
 }
 
 /**

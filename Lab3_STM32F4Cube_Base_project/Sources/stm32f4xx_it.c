@@ -202,7 +202,10 @@ extern TIM_HandleTypeDef TIM_LED_handle;
 void TIM3_IRQHandler(){
 	HAL_TIM_IRQHandler(&TIM_LED_handle);
 }
+extern int DISPLAY_DIGIT;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
+	DISPLAY_DIGIT++;
+        if (DISPLAY_DIGIT > 3) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
 
 }
 /**

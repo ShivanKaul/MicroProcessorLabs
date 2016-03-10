@@ -23,8 +23,9 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
 extern int MS_PASSED;
-int keypad_flag=0;
+int keypad_flag=0, display_flag=0;
 TIM_HandleTypeDef tim;
+float typed_angle, current_angle;
 int main(void)
 {	
 	int i;
