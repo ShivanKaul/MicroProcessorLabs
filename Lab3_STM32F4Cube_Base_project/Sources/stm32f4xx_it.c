@@ -195,7 +195,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
 		
 		LIS3DSH_ReadACC(out);
-		printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
+		//printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
 		Kalmanfilter_C (out, out, &kalman_x, 1);
 		Kalmanfilter_C (out+1, out+1, &kalman_y, 1);
 		Kalmanfilter_C (out+2, out+2, &kalman_z, 1);

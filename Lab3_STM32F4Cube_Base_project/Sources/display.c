@@ -66,11 +66,11 @@ uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 	uint32_t val=LED_DEG;
 	//up and down arrows
 	if (num < 0){
-		if (num == -1){ // left arrow
-			return LED_EN_1|LED_EN_2|LED_A|LED_D|LED_E|LED_F;
+		if (num == -2){ // up arrow
+			return LED_EN_1|LED_EN_0|LED_A|LED_B|LED_F;
 		}
-		if (num == -2){ // right arrow
-			return LED_EN_1|LED_EN_2|LED_D|LED_A|LED_B|LED_C;
+		if (num == -1){ // down arrow
+			return LED_EN_1|LED_EN_0|LED_D|LED_E|LED_C;
 		}
 	}
 	switch(num){

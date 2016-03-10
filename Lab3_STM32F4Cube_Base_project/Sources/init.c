@@ -128,23 +128,47 @@ float x_matrix_values[]= { -4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
 float id[] ={1,1,1, 1,1,1, 1,1,1, 1,1,1};
 arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 void matrix_init(void){
-//	x_matrix.numRows=4;
-//	x_matrix.numCols=3;
-//	x_matrix.pData=x_matrix_values;
-//	x_matrix.pData=id;
+
 	arm_mat_init_f32(&x_matrix,4,3,x_matrix_values);
 	out[3]=1;
-//	w_matrix.numRows=1;
-//	w_matrix.numCols=4;
-//	w_matrix.pData=out;
 	arm_mat_init_f32(&w_matrix,1,4,out);
-	
-//	y_matrix.numRows=3;
-//	y_matrix.numCols=1;
-//	
-//	y_matrix.pData=acc;
 	arm_mat_init_f32(&y_matrix,1,3,acc);
-	//printf();
-	
+}
+/** System Clock Configuration*/
+void SystemClock_Config(void){
 
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+
+  __PWR_CLK_ENABLE();
+
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  RCC_OscInitStruct.OscillatorType 	= RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState 			 	= RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState 		= RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource 	= RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM 				= 8;
+  RCC_OscInitStruct.PLL.PLLN 				= 336;
+  RCC_OscInitStruct.PLL.PLLP 				= RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ 				= 7;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK){Error_Handler(RCC_CONFIG_FAIL);};
+
+  RCC_ClkInitStruct.ClockType 			= RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource 		= RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider 	= RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider 	= RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider 	= RCC_HCLK_DIV2;
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5)!= HAL_OK){Error_Handler(RCC_CONFIG_FAIL);};
+	
+	/*Configures SysTick to provide 1ms interval interrupts. SysTick is already 
+	  configured inside HAL_Init, I don't kow why the CubeMX generates this call again*/
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+
+	/* This function sets the source clock for the internal SysTick Timer to be the maximum,
+	   in our case, HCLK is now 168MHz*/
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+
+  /* SysTick_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }

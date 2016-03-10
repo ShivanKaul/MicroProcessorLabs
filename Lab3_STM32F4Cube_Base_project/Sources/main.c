@@ -24,7 +24,7 @@
 
 
 /* Definitions ---------------------------------------------------------*/
-#define POSITIONING_AXIS 0
+#define POSITIONING_AXIS 1
 #define ANGLE_RANGE 5
 
 
@@ -75,9 +75,9 @@ int main(void)
 			display_flag = 0;
 			//printf("%f\n",acc_to_display);
 			if (positioning_started) {
-//				position(targetDegrees);
+				position(targetDegrees);
 				acc_to_display=targetDegrees;
-				positioning_started--;
+				
 			}
 			else {
 				buttonPressed = readButton();
@@ -89,7 +89,7 @@ int main(void)
 					}
 					else {
 						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
-						positioning_started = 5000;
+						positioning_started = 1;
 					}
 				}			
 			}
@@ -107,12 +107,12 @@ void position(int targetDegrees) {
 	// Get angles
 	convertAccToAngle(acc, angles);
 	current_angle = angles[POSITIONING_AXIS];
-	
+	printf("Measured angle:%f; Target Angle:%d\n",current_angle,targetDegrees);
 	// if in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
 		display_flag = 0;
 		acc_to_display = current_angle;
-		
+		//positioning_started = 0;
 	} else { // if outside
 		if (current_angle > targetDegrees) {
 			// display -->
@@ -127,9 +127,9 @@ void position(int targetDegrees) {
 }
 
 void convertAccToAngle(float* acc, float* angles) {
-	angles[0] = atan2(acc[0], sqrt(square((acc[1]) + square(acc[2]))));
-	angles[1] = atan2(acc[1], sqrt(square((acc[0]) + square(acc[2]))));
-	angles[2] = atan2(acc[2], sqrt(square((acc[1]) + square(acc[0]))));
+	angles[0] = atan2(acc[0], sqrt(square((acc[1]) + square(acc[2]))))*180/3.14159265;
+	angles[1] = atan2(acc[1], sqrt(square((acc[0]) + square(acc[2]))))*180/3.14159265;
+	angles[2] = atan2(acc[2], sqrt(square((acc[1]) + square(acc[0]))))*180/3.14159265;
 }
 
 float square(float x) {
@@ -140,44 +140,7 @@ float absolute(float x) {
 	return x >= 0 ? x : -x;
 }
 
-/** System Clock Configuration*/
-void SystemClock_Config(void){
 
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-
-  __PWR_CLK_ENABLE();
-
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-  RCC_OscInitStruct.OscillatorType 	= RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState 			 	= RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState 		= RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource 	= RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM 				= 8;
-  RCC_OscInitStruct.PLL.PLLN 				= 336;
-  RCC_OscInitStruct.PLL.PLLP 				= RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ 				= 7;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK){Error_Handler(RCC_CONFIG_FAIL);};
-
-  RCC_ClkInitStruct.ClockType 			= RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource 		= RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider 	= RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider 	= RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider 	= RCC_HCLK_DIV2;
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5)!= HAL_OK){Error_Handler(RCC_CONFIG_FAIL);};
-	
-	/*Configures SysTick to provide 1ms interval interrupts. SysTick is already 
-	  configured inside HAL_Init, I don't kow why the CubeMX generates this call again*/
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-	/* This function sets the source clock for the internal SysTick Timer to be the maximum,
-	   in our case, HCLK is now 168MHz*/
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
-}
 
 #ifdef USE_FULL_ASSERT
 
