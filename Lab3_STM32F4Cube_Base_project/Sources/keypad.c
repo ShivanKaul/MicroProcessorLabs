@@ -42,9 +42,6 @@ uint8_t readButton(){
 	//uint16_t read =GPIO_PIN_All; //all 1s
 	if(keypad_flag){
 		read |= ((keypadGPIO->IDR) & GPIO_Init_Keypad_Row.Pin); //read only row pins and get all 0s
-
-		
-		//printf("%d\n",read);	
 		if (read!=(INITREAD|GPIO_Init_Keypad_Row.Pin)){//button press
 			if (!debouncing_countdown) {// not zero
 				setInput(&GPIO_Init_Keypad_Col);

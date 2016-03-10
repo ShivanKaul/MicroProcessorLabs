@@ -84,7 +84,7 @@ void LISInit(void) {
 	LIS3DSH_Read(&offsetX, LIS3DSH_OFF_X, 1);
   LIS3DSH_Read(&offsetY, LIS3DSH_OFF_Y, 1);
   LIS3DSH_Read(&offsetZ, LIS3DSH_OFF_Z, 1);
-	printf("x:%d,y:%d,z:%d\n",offsetX,offsetY,offsetZ);
+	//printf("x:%d,y:%d,z:%d\n",offsetX,offsetY,offsetZ);
 }
 
 
@@ -110,7 +110,7 @@ void TIMInit(void)
 	HAL_TIM_Base_Start_IT(&TIM_LED_handle);
 	
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);
-	HAL_NVIC_SetPriority(TIM3_IRQn, 9,9);
+	HAL_NVIC_SetPriority(TIM3_IRQn, 2,0);
 
 }
 extern kalman_state kalman_x, kalman_y,kalman_z;

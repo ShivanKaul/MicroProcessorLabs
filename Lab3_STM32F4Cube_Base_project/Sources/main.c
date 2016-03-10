@@ -17,7 +17,7 @@
 #include "lis3dsh.h"
 #include "keypad.h"
 #include "stdio.h"
-
+#include "display.h"
 #include "kalman.h"
 
 #include "math.h"
@@ -69,23 +69,30 @@ int main(void)
 	matrix_init();
 
 	while (1){
-		if(MS_PASSED){
-			
+		if (MS_PASSED){
 			keypad_flag = !keypad_flag;
-			buttonPressed = readButton();
-			if (buttonPressed != NOREAD) {
-				if (buttonPressed != 10 && !positioning_started) targetDegrees = (targetDegrees * 10) + buttonPressed;
-				else {
-					positioning_started = 1;
-					if (targetDegrees > 180) targetDegrees = targetDegrees - 180;
-					position(targetDegrees);
-				}
-				printf("%d\n",buttonPressed);	
-			}			
+			if (positioning_started) {
+				position(targetDegrees);
+			}
+			else {
+				buttonPressed = readButton();
+				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
+					printf("Button pressed was: %d\n",buttonPressed);
+					if (buttonPressed != 10) targetDegrees = (targetDegrees * 10) + buttonPressed;
+					else {
+						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
+						positioning_started = 1;
+					}
+					// 	
+				}			
+			}
+			updateDisplay();
+			MS_PASSED = 0;
 		}
+		
 	}
 }
-
+extern float acc_to_display;
 void position(int targetDegrees) {
 	// We will be positioning along X axis -> roll
 	float angles[3];
@@ -97,13 +104,17 @@ void position(int targetDegrees) {
 	// if in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
 		display_flag = 0;
+		acc_to_display = current_angle;
+		
 	} else { // if outside
 		if (current_angle > targetDegrees) {
 			// display -->
 			display_flag=-1;
+			
 		} else {
 			// display <--
 			display_flag=-2;
+
 		}
 	}
 }

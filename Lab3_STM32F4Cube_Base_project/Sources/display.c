@@ -11,7 +11,7 @@ int DISPLAY_DIGIT = 0;
 //extern int ALARM_LED;
 //int RAISE_ALARM = 0;
 //extern int RAISE_ALARM_SEM;
-float acc_to_display;
+float acc_to_display=0.0f;
 
 // Define statments, for prettier code
 #define LED_EN_0 GPIO_PIN_7 /*pin 7*/
@@ -107,10 +107,10 @@ uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 	}
 	switch(place){
 		case 0:
-			val |= (((dp_pos & 1)<<4)& LED_DP)|  LED_EN_0;
+			val |= /*(((dp_pos & 1)<<4)& LED_DP)|*/  LED_EN_0;
 		  break;
 		case 1:
-			val |= (((dp_pos >> 1 & 1)<<4)& LED_DP)|LED_EN_1;
+			val |= /*(((dp_pos >> 1 & 1)<<4)& LED_DP)|*/LED_EN_1;
 		  break;
 		case 2:
 			val |= LED_EN_2;
