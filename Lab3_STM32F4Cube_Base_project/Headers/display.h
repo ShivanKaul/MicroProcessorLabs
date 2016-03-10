@@ -2,7 +2,7 @@
 #include "supporting_functions.h"
 
 void updateDisplay(void);
-uint32_t getRegisterLEDValue(int num,int place);
+uint32_t getRegisterLEDValue(int num,int place,int);
 
 void alarm_on(void);
 void alarm_off(void);

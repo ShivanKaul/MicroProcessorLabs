@@ -9,6 +9,7 @@
   */
 	
 /* Includes ------------------------------------------------------------------*/
+
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
 #include "stm32f4xx_hal_spi.h"

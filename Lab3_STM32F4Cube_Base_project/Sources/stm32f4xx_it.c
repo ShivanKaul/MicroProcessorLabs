@@ -38,13 +38,14 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#define ARM_MATH_CM4
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "stm32f4xx_hal.h"
 #include "stdio.h"
 #include "lis3dsh.h"
 #include "kalman.h"
-#include "armmath.h"
+#include "arm_math.h"
 
 
 /** @addtogroup STM32F4xx_HAL_Examples
@@ -211,7 +212,7 @@ void TIM3_IRQHandler(){
 extern int DISPLAY_DIGIT;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 	DISPLAY_DIGIT++;
-        if (DISPLAY_DIGIT > 3) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
+  if (DISPLAY_DIGIT > 3) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
 
 }
 /**

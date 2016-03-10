@@ -3,13 +3,13 @@
  * @author Yusaira Khan 
  * @author Shivan Kaul
  */
-
+#define ARM_MATH_CM4
 #include "init.h"
 #include "stm32f4xx_hal.h"
 #include "lis3dsh.h"
 #include "stdio.h"
 #include "kalman.h"
-#include "armmath.h"
+#include "arm_math.h"
 
 
 LIS3DSH_InitTypeDef LISInitStruct; 
@@ -96,12 +96,13 @@ void TIMInit(void)
 	Timinit.Period = 1000-1; /* 1 MHz to 1 kHz */
 	Timinit.Prescaler = 42-1; /* 42 MHz to 1 MHz */
 	Timinit.CounterMode = TIM_COUNTERMODE_UP;
+	Timinit.ClockDivision = TIM_CLOCKDIVISION_DIV1; //default
 	
 	TIM_LED_handle.Instance = TIM3;
 	TIM_LED_handle.Init = Timinit;
-	TIM_LED_handle.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
-	TIM_LED_handle.Lock = HAL_UNLOCKED;
-	TIM_LED_handle.State = HAL_TIM_STATE_READY;
+	TIM_LED_handle.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED; //default
+	TIM_LED_handle.Lock = HAL_UNLOCKED;  //default
+	TIM_LED_handle.State = HAL_TIM_STATE_RESET; //default
 
 	HAL_TIM_Base_MspInit(&TIM_LED_handle);
 	
@@ -113,13 +114,13 @@ void TIMInit(void)
 
 }
 extern kalman_state kalman_x, kalman_y,kalman_z;
-void kalmanInit(void){
+void kalman_init(void){
 	kalman_x.p= kalman_y.p=kalman_z.p=1000;
 	kalman_x.r= kalman_y.r=kalman_z.r=50; 
 	kalman_x.q= kalman_y.q=kalman_z.q=0.1; 
 
 }
-extern float acc,out;
+extern float acc[],out[];
 float x_matrix_values[]= { -4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
   2.45104913e-06,-9.59368470e-04,5.16623301e-05,
  -2.34181711e-05,  -2.14577670e-05,  -9.78816908e-04,
@@ -128,14 +129,14 @@ arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 void matrix_init(void){
 	x_matrix.numRows=4;
 	x_matrix.numCols=3;
-	x_matrix.pdata=x_matrix_values;
+	x_matrix.pData=x_matrix_values;
 	w_matrix.numRows=1;
 	w_matrix.numCols=4;
-	w_matrix.pdata=out;
+	w_matrix.pData=out;
 	out[3]=1;
 	y_matrix.numCols=1;
 	y_matrix.numRows=3;
-	y_matrix.pdata=acc;
+	y_matrix.pData=acc;
 	
 
 }
