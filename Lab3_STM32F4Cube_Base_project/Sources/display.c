@@ -26,6 +26,7 @@ float acc_to_display;
 #define LED_E GPIO_PIN_12 /*Pin 5*/
 #define LED_F GPIO_PIN_10 /*Pin 11*/
 #define LED_G GPIO_PIN_9 /*Pin 15*/
+#define LED_DP GPIO_PIN_4 /*Pin 7*/
 
 // AlarmLEDs
 #define LED_Green GPIO_PIN_12
@@ -50,8 +51,8 @@ void updateDisplay(void) {
 			padded /= 10;
 		}
 		digit = padded % 10;
-		GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT);
-	} else { GPIOB->ODR = getRegisterLEDValue(display_flag, 0);} // Display arrow!
+		GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT,0);
+	} else { GPIOB->ODR = getRegisterLEDValue(display_flag, 0,0);} // Display arrow!
 }
 
 /**
@@ -61,7 +62,7 @@ void updateDisplay(void) {
 * @param Place to convert
 * @retval Register LED value
 */
-uint32_t getRegisterLEDValue(int num,int place) {
+uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 	uint32_t val=LED_DEG;
 	//up and down arrows
 	if (num < 0){
@@ -106,13 +107,13 @@ uint32_t getRegisterLEDValue(int num,int place) {
 	}
 	switch(place){
 		case 0:
-			val |= LED_EN_0;
+			val |= ((dp_pos & 1)<<4)& LED_DP|  LED_EN_0;
 		  break;
 		case 1:
-			val |= LED_EN_1;
+			val |= L((dp_pos >> 1 & 1)<<4)& LED_DP|ED_EN_1;
 		  break;
 		case 2:
-			val |= LED_EN_2;//!!num*LED_EN_2;
+			val |= LED_EN_2;
 		  break;
 	}
 	return val;
