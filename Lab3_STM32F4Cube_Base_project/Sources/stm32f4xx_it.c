@@ -195,16 +195,28 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
 		
 		LIS3DSH_ReadACC(out);
+		printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
 		Kalmanfilter_C (out, out, &kalman_x, 1);
 		Kalmanfilter_C (out+1, out+1, &kalman_y, 1);
 		Kalmanfilter_C (out+2, out+2, &kalman_z, 1);
-		arm_mat_mult_f32(&x_matrix,&w_matrix,&y_matrix);
 		
+		arm_mat_mult_f32(&w_matrix,&x_matrix,&y_matrix);
+		
+		//printf("X: %f,%f,%f,%f\n",x_matrix.pData[0],x_matrix.pData[1],x_matrix.pData[2],x_matrix.pData[3]);
+		//printf("Y: %f,%f,%f\n",y_matrix.pData[0],y_matrix.pData[1],y_matrix.pData[2]);
 		//out[3]=1;
 		
-		///printf("%d,%d,%d\n",acc[0],acc[1],acc[2]);
+		
 	}
 }
+
+//float x_matrix_values[]= { -4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
+//  2.45104913e-06,-9.59368470e-04,5.16623301e-05,
+// -2.34181711e-05,  -2.14577670e-05,  -9.78816908e-04,
+//  1.98397753e-01,   9.01443456e-03,   5.32591158e-02};
+void mult(void ){}
+
+
 extern TIM_HandleTypeDef TIM_LED_handle;
 void TIM3_IRQHandler(){
 	HAL_TIM_IRQHandler(&TIM_LED_handle);

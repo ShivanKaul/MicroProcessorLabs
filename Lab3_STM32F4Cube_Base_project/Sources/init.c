@@ -33,7 +33,7 @@ void gpioInit(void) {
 	HAL_GPIO_Init(GPIOE, &GPIO_Init_Acc);
 	
 	HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
-	//HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 	
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	GPIO_Init_Disp.Pin = GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15
@@ -125,18 +125,26 @@ float x_matrix_values[]= { -4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
   2.45104913e-06,-9.59368470e-04,5.16623301e-05,
  -2.34181711e-05,  -2.14577670e-05,  -9.78816908e-04,
   1.98397753e-01,   9.01443456e-03,   5.32591158e-02};
+float id[] ={1,1,1, 1,1,1, 1,1,1, 1,1,1};
 arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 void matrix_init(void){
-	x_matrix.numRows=4;
-	x_matrix.numCols=3;
-	x_matrix.pData=x_matrix_values;
-	w_matrix.numRows=1;
-	w_matrix.numCols=4;
-	w_matrix.pData=out;
+//	x_matrix.numRows=4;
+//	x_matrix.numCols=3;
+//	x_matrix.pData=x_matrix_values;
+//	x_matrix.pData=id;
+	arm_mat_init_f32(&x_matrix,4,3,x_matrix_values);
 	out[3]=1;
-	y_matrix.numCols=1;
-	y_matrix.numRows=3;
-	y_matrix.pData=acc;
+//	w_matrix.numRows=1;
+//	w_matrix.numCols=4;
+//	w_matrix.pData=out;
+	arm_mat_init_f32(&w_matrix,1,4,out);
+	
+//	y_matrix.numRows=3;
+//	y_matrix.numCols=1;
+//	
+//	y_matrix.pData=acc;
+	arm_mat_init_f32(&y_matrix,1,3,acc);
+	//printf();
 	
 
 }

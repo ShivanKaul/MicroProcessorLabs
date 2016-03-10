@@ -50,8 +50,8 @@ extern float acc_to_display;
 
 int main(void)
 {	
-	int buttonPressed;
-	int targetDegrees;
+	int buttonPressed=0;
+	int targetDegrees=0;
   /* MCU Configuration----------------------------------------------------------*/
   HAL_Init();
 
@@ -61,7 +61,7 @@ int main(void)
   /* Initialize all configured peripherals */
 		// Initialize GPIOs
 	gpioInit();
-	//init_keypad();
+	init_keypad();
 	// Initialize accelerometer
 	LISInit();
 	TIMInit();
@@ -71,24 +71,28 @@ int main(void)
 	while (1){
 		if (MS_PASSED){
 			keypad_flag = !keypad_flag;
-			acc_to_display=128;
+			//acc_to_display=128;
 			display_flag = 0;
-			printf("%f\n",acc_to_display);
-//			if (positioning_started) {
+			//printf("%f\n",acc_to_display);
+			if (positioning_started) {
 //				position(targetDegrees);
-//			}
-//			else {
-//				buttonPressed = readButton();
-//				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
-//					printf("Button pressed was: %d\n",buttonPressed);
-//					if (buttonPressed != 10) targetDegrees = (targetDegrees * 10) + buttonPressed;
-//					else {
-//						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
-//						positioning_started = 1;
-//					}
-//					// 	
-//				}			
-//			}
+				acc_to_display=targetDegrees;
+				positioning_started--;
+			}
+			else {
+				buttonPressed = readButton();
+				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
+					//printf("Button pressed was: %d\n",buttonPressed);
+					if (buttonPressed != 10){ 
+					targetDegrees = (targetDegrees * 10) + buttonPressed;
+					//printf("current target degres %d", targetDegrees);
+					}
+					else {
+						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
+						positioning_started = 5000;
+					}
+				}			
+			}
 			updateDisplay();
 			MS_PASSED = 0;
 		}
