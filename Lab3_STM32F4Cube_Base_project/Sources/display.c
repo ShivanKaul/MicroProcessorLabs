@@ -11,7 +11,7 @@ int DISPLAY_DIGIT = 0;
 //extern int ALARM_LED;
 //int RAISE_ALARM = 0;
 //extern int RAISE_ALARM_SEM;
-float acc_to_display=0.0f;
+float acc_to_display=0;
 
 // Define statments, for prettier code
 #define LED_EN_0 GPIO_PIN_7 /*pin 7*/
@@ -47,7 +47,7 @@ void updateDisplay(void) {
 		digit;
 	// LED displaying logic
 	if(!display_flag) {
-		for (i=0; i< acc_to_display; i++){
+		for (i=0; i< DISPLAY_DIGIT; i++){
 			padded /= 10;
 		}
 		digit = padded % 10;

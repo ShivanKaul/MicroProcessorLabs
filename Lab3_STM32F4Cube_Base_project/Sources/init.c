@@ -33,7 +33,7 @@ void gpioInit(void) {
 	HAL_GPIO_Init(GPIOE, &GPIO_Init_Acc);
 	
 	HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	//HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 	
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	GPIO_Init_Disp.Pin = GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15
@@ -108,9 +108,9 @@ void TIMInit(void)
 	
 	HAL_TIM_Base_Init(&TIM_LED_handle);
 	HAL_TIM_Base_Start_IT(&TIM_LED_handle);
-	
-	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	HAL_NVIC_SetPriority(TIM3_IRQn, 2,0);
+	HAL_NVIC_EnableIRQ(TIM3_IRQn);
+	
 
 }
 extern kalman_state kalman_x, kalman_y,kalman_z;

@@ -46,7 +46,7 @@ kalman_state kalman_x, kalman_y,kalman_z;
 
 int positioning_started = 0;
 float acc[3],out[4];
-
+extern float acc_to_display;
 
 int main(void)
 {	
@@ -61,7 +61,7 @@ int main(void)
   /* Initialize all configured peripherals */
 		// Initialize GPIOs
 	gpioInit();
-	init_keypad();
+	//init_keypad();
 	// Initialize accelerometer
 	LISInit();
 	TIMInit();
@@ -71,28 +71,31 @@ int main(void)
 	while (1){
 		if (MS_PASSED){
 			keypad_flag = !keypad_flag;
-			if (positioning_started) {
-				position(targetDegrees);
-			}
-			else {
-				buttonPressed = readButton();
-				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
-					printf("Button pressed was: %d\n",buttonPressed);
-					if (buttonPressed != 10) targetDegrees = (targetDegrees * 10) + buttonPressed;
-					else {
-						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
-						positioning_started = 1;
-					}
-					// 	
-				}			
-			}
+			acc_to_display=128;
+			display_flag = 0;
+			printf("%f\n",acc_to_display);
+//			if (positioning_started) {
+//				position(targetDegrees);
+//			}
+//			else {
+//				buttonPressed = readButton();
+//				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
+//					printf("Button pressed was: %d\n",buttonPressed);
+//					if (buttonPressed != 10) targetDegrees = (targetDegrees * 10) + buttonPressed;
+//					else {
+//						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
+//						positioning_started = 1;
+//					}
+//					// 	
+//				}			
+//			}
 			updateDisplay();
 			MS_PASSED = 0;
 		}
 		
 	}
 }
-extern float acc_to_display;
+
 void position(int targetDegrees) {
 	// We will be positioning along X axis -> roll
 	float angles[3];

@@ -212,7 +212,7 @@ void TIM3_IRQHandler(){
 extern int DISPLAY_DIGIT;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 	DISPLAY_DIGIT++;
-  if (DISPLAY_DIGIT > 3) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
+  if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
 
 }
 /**
