@@ -24,11 +24,12 @@
 void SystemClock_Config	(void);
 extern int MS_PASSED;
 int keypad_flag=0;
+TIM_HandleTypeDef tim;
 int main(void)
 {	
 	int i;
   /* MCU Configuration----------------------------------------------------------*/
-
+tim
   HAL_Init();
 
   /* Configure the system clock */

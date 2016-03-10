@@ -19,7 +19,7 @@ LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 * @retval None
 */
 void gpioInit(void) {
-	GPIO_InitTypeDef GPIO_Init_Acc;//, GPIO_Init_Keypad_Input,GPIO_Init_Keypad_Output ;
+	GPIO_InitTypeDef GPIO_Init_Acc, GPIO_Init_Disp;//, GPIO_Init_Keypad_Input,GPIO_Init_Keypad_Output ;
 	
 	// GPIO clock for LEDs
 
@@ -31,6 +31,14 @@ void gpioInit(void) {
 	
 	HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	GPIO_Init_Disp.Pin = GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13| GPIO_PIN_14 | GPIO_PIN_15
+	| GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 ;
+	GPIO_Init_Disp.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_Init_Disp.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_Init_Disp.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOB, &GPIO_Init_Disp);
 
 	
 }
