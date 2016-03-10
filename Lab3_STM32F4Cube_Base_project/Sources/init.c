@@ -13,7 +13,7 @@ LIS3DSH_InitTypeDef LISInitStruct;
 LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 
 /**
-* @brief Initialize GPIOs - GPIOB for display LEDs and GPIOD for alarm LEDs
+* @brief Initialize GPIOs - GPIOB for display LEDs and GPIOD for acceloremter intterupt
 * @file init.c
 * @param None
 * @retval None
@@ -43,8 +43,10 @@ void gpioInit(void) {
 	
 }
 
+
+
 /**
-* @brief Initialize ADC
+* @brief Initialize Accelormeter
 * @file init.c
 * @param None
 * @retval None
@@ -82,3 +84,29 @@ void LISInit(void) {
 	printf("x:%d,y:%d,z:%d\n",offsetX,offsetY,offsetZ);
 }
 
+
+TIM_HandleTypeDef TIM_LED_handle;
+void Timer_Config(void)
+{	
+	TIM_Base_InitTypeDef Timinit;
+	__TIM3_CLK_ENABLE();
+	Timinit.Period = 1;
+	Timinit.Prescaler = 1;
+	Timinit.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+	Timinit.CounterMode = TIM_COUNTERMODE_UP;
+	
+	TIM_LED_handle.Instance = TIM3;
+	TIM_LED_handle.Init = Timinit;
+	TIM_LED_handle.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
+	TIM_LED_handle.Lock = HAL_UNLOCKED;
+	TIM_LED_handle.State = HAL_TIM_STATE_READY;
+
+	HAL_TIM_Base_MspInit(&TIM_LED_handle);
+	
+	HAL_TIM_Base_Init(&TIM_LED_handle);
+	HAL_TIM_Base_Start_IT(&TIM_LED_handle);
+	
+	HAL_NVIC_EnableIRQ(TIM3_IRQn);
+	HAL_NVIC_SetPriority(TIM3_IRQn, 9,9);
+
+}

@@ -11,7 +11,7 @@ int NOW_CHANGE_DISPLAY = 0;
 //extern int ALARM_LED;
 //int RAISE_ALARM = 0;
 //extern int RAISE_ALARM_SEM;
-float temperature_to_display;
+float acc_to_display;
 
 // Define statments, for prettier code
 #define LED_EN_0 GPIO_PIN_6 
@@ -41,14 +41,14 @@ float temperature_to_display;
 * @retval None
 */
 void updateDisplay(void) {
-	int temperature_padded = (int) (temperature_to_display * 10), 
+	int padded = (int) (acc_to_display), 
 		i,
 		digit;
 	// LED displaying logic
-	for(i=0; i< NOW_CHANGE_DISPLAY; i++){
-		temperature_padded /= 10;
+	for(i=0; i< acc_to_display; i++){
+		padded /= 10;
 	}
-	digit = temperature_padded % 10;
+	digit = padded % 10;
 	
 	GPIOB->ODR = getRegisterLEDValue(digit,NOW_CHANGE_DISPLAY);
 }
@@ -61,8 +61,16 @@ void updateDisplay(void) {
 * @retval Register LED value
 */
 uint32_t getRegisterLEDValue(int num,int place) {
-	uint32_t val=0;
-	val=LED_DEG;
+	uint32_t val=LED_DEG;
+	//up and down arrows
+	if(num<0){
+		if (num==-1){//down arrow
+			return LED_EN_1|LED_EN_2|LED_C|LED_D|LED_E;
+		}
+		if (num==-2){//up arrow
+			return LED_EN_1|LED_EN_2|LED_F|LED_A|LED_B;
+		}
+	}
 	switch(num){
 		case 0:
 			val |= LED_A|LED_B|LED_C|LED_D|LED_E|LED_F;
@@ -104,7 +112,7 @@ uint32_t getRegisterLEDValue(int num,int place) {
 			val |= LED_EN_1;
 		  break;
 		case 2:
-			val |= LED_EN_2;
+			val |= LED_EN_2;//!!num*LED_EN_2;
 		  break;
 	}
 	return val;

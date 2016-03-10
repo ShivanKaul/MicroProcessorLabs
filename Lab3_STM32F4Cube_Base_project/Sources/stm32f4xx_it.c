@@ -198,7 +198,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		///printf("%d,%d,%d\n",acc[0],acc[1],acc[2]);
 	}
 }
-void HAL_TIM_PeriodElapsedCallback(){}
+extern TIM_HandleTypeDef TIM_LED_handle;
+void TIM3_IRQHandler(){
+	HAL_TIM_IRQHandler(&TIM_LED_handle);
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
+
+}
 /**
   * @}
   */ 
