@@ -16,6 +16,7 @@
 #include "lis3dsh.h"
 #include "keypad.h"
 #include "stdio.h"
+#include "kalman.h"
 
 /* Private variables ---------------------------------------------------------*/
 //LIS3DSH_InitTypeDef LISInitStruct;
@@ -26,11 +27,12 @@ extern int MS_PASSED;
 int keypad_flag=0, display_flag=0;
 TIM_HandleTypeDef tim;
 float typed_angle, current_angle;
+kalman_state kalman_x, kalman_y,kalman_z;
 int main(void)
 {	
 	int i;
   /* MCU Configuration----------------------------------------------------------*/
-tim
+
   HAL_Init();
 
   /* Configure the system clock */
@@ -42,7 +44,9 @@ tim
 	init_keypad();
 	// Initialize accelerometer
 	LISInit();
-
+	TIMInit();
+	kalman_init();
+	matrix_init();
 
 	while (1){
 		if(MS_PASSED){

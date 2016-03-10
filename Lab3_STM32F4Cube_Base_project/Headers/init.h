@@ -3,3 +3,6 @@
 
 void gpioInit(void);
 void LISInit(void);
+void TIMInit(void);
+void kalman_init(void);
+void matrix_init(void);

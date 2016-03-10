@@ -43,6 +43,9 @@
 #include "stm32f4xx_hal.h"
 #include "stdio.h"
 #include "lis3dsh.h"
+#include "kalman.h"
+#include "armmath.h"
+
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -183,18 +186,22 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void){
  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
+float acc[3],out[4];
 
+
+extern kalman_state kalman_x, kalman_y,kalman_z;
+extern arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
-		int16_t acc[3],i=0;
-		uint8_t l,h;
-		for(i=0;i<3;i++){
-			LIS3DSH_Read(&l, LIS3DSH_OUT_X_L+(2*i), 1);
-			LIS3DSH_Read(&h, LIS3DSH_OUT_X_L+(2*i+1), 1);
-			acc[i]= (int16_t)(l | h << 8);//(((int)h)<<8)+l;
-		}
 		
-		//LIS3DSH_ReadACC(acc);
+		LIS3DSH_ReadACC(out);
+		Kalmanfilter_C (out, out, &kalman_x, 1);
+		Kalmanfilter_C (out+1, out+1, &kalman_y, 1);
+		Kalmanfilter_C (out+2, out+2, &kalman_z, 1);
+		arm_mat_mult_f32(&x_matrix,&w_matrix,&y_matrix);
+		
+		//out[3]=1;
+		
 		///printf("%d,%d,%d\n",acc[0],acc[1],acc[2]);
 	}
 }

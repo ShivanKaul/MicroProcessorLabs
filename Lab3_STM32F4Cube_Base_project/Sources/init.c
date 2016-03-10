@@ -8,6 +8,9 @@
 #include "stm32f4xx_hal.h"
 #include "lis3dsh.h"
 #include "stdio.h"
+#include "kalman.h"
+#include "armmath.h"
+
 
 LIS3DSH_InitTypeDef LISInitStruct; 
 LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
@@ -86,13 +89,12 @@ void LISInit(void) {
 
 
 TIM_HandleTypeDef TIM_LED_handle;
-void Timer_Config(void)
+void TIMInit(void)
 {	
 	TIM_Base_InitTypeDef Timinit;
 	__TIM3_CLK_ENABLE();
-	Timinit.Period = 1;
-	Timinit.Prescaler = 1;
-	Timinit.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+	Timinit.Period = 1000-1; /* 1 MHz to 1 kHz */
+	Timinit.Prescaler = 42-1; /* 42 MHz to 1 MHz */
 	Timinit.CounterMode = TIM_COUNTERMODE_UP;
 	
 	TIM_LED_handle.Instance = TIM3;
@@ -108,5 +110,32 @@ void Timer_Config(void)
 	
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	HAL_NVIC_SetPriority(TIM3_IRQn, 9,9);
+
+}
+extern kalman_state kalman_x, kalman_y,kalman_z;
+void kalmanInit(void){
+	kalman_x.p= kalman_y.p=kalman_z.p=1000;
+	kalman_x.r= kalman_y.r=kalman_z.r=50; 
+	kalman_x.q= kalman_y.q=kalman_z.q=0.1; 
+
+}
+extern float acc,out;
+float x_matrix_values[]= { -4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
+  2.45104913e-06,-9.59368470e-04,5.16623301e-05,
+ -2.34181711e-05,  -2.14577670e-05,  -9.78816908e-04,
+  1.98397753e-01,   9.01443456e-03,   5.32591158e-02};
+arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
+void matrix_init(void){
+	x_matrix.numRows=4;
+	x_matrix.numCols=3;
+	x_matrix.pdata=x_matrix_values;
+	w_matrix.numRows=1;
+	w_matrix.numCols=4;
+	w_matrix.pdata=out;
+	out[3]=1;
+	y_matrix.numCols=1;
+	y_matrix.numRows=3;
+	y_matrix.pdata=acc;
+	
 
 }
