@@ -39,17 +39,19 @@ float acc_to_display;
 * @param None
 * @retval None
 */
+extern int display_flag;
 void updateDisplay(void) {
 	int padded = (int) (acc_to_display), 
 		i,
 		digit;
 	// LED displaying logic
-	for(i=0; i< acc_to_display; i++){
-		padded /= 10;
-	}
-	digit = padded % 10;
-	
-	GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT);
+	if(!display_flag) {
+		for (i=0; i< acc_to_display; i++){
+			padded /= 10;
+		}
+		digit = padded % 10;
+		GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT);
+	} else { GPIOB->ODR = getRegisterLEDValue(display_flag, 0);} // Display arrow!
 }
 
 /**
@@ -62,12 +64,12 @@ void updateDisplay(void) {
 uint32_t getRegisterLEDValue(int num,int place) {
 	uint32_t val=LED_DEG;
 	//up and down arrows
-	if(num<0){
-		if (num==-1){//down arrow
-			return LED_EN_1|LED_EN_2|LED_C|LED_D|LED_E;
+	if (num < 0){
+		if (num == -1){ // left arrow
+			return LED_EN_1|LED_EN_2|LED_A|LED_D|LED_E|LED_F;
 		}
-		if (num==-2){//up arrow
-			return LED_EN_1|LED_EN_2|LED_F|LED_A|LED_B;
+		if (num == -2){ // right arrow
+			return LED_EN_1|LED_EN_2|LED_D|LED_A|LED_B|LED_C;
 		}
 	}
 	switch(num){
@@ -101,7 +103,6 @@ uint32_t getRegisterLEDValue(int num,int place) {
 		case 9:
 			val |= LED_A|LED_B|LED_C|LED_D|LED_F|LED_G;
 			break;
-			
 	}
 	switch(place){
 		case 0:

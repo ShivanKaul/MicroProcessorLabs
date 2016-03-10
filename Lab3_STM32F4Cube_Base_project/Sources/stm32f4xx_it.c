@@ -189,10 +189,23 @@ void EXTI0_IRQHandler(void){
 float acc[3],out[4];
 
 
+<<<<<<< HEAD
 extern kalman_state kalman_x, kalman_y,kalman_z;
 extern arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
+=======
+extern float acc[3];
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if (GPIO_Pin==GPIO_PIN_0){
+		int i=0;
+		uint8_t l,h;
+		for(i=0;i<3;i++){
+			LIS3DSH_Read(&l, LIS3DSH_OUT_X_L+(2*i), 1);
+			LIS3DSH_Read(&h, LIS3DSH_OUT_X_L+(2*i+1), 1);
+			acc[i]= (float)(l | h << 8);//(((int)h)<<8)+l;
+		}
+>>>>>>> d040dcc... Positioning WIP
 		
 		LIS3DSH_ReadACC(out);
 		Kalmanfilter_C (out, out, &kalman_x, 1);

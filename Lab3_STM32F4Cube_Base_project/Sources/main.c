@@ -16,23 +16,46 @@
 #include "lis3dsh.h"
 #include "keypad.h"
 #include "stdio.h"
+<<<<<<< HEAD
 #include "kalman.h"
+=======
+#include "math.h"
+
+
+/* Definitions ---------------------------------------------------------*/
+#define POSITIONING_AXIS 0
+#define ANGLE_RANGE 5
+>>>>>>> d040dcc... Positioning WIP
 
 /* Private variables ---------------------------------------------------------*/
 //LIS3DSH_InitTypeDef LISInitStruct;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
+void convertAccToAngle(float*, float*);
+float square(float);
+float absolute(float);
+void position (int);
 extern int MS_PASSED;
 int keypad_flag=0, display_flag=0;
 TIM_HandleTypeDef tim;
 float typed_angle, current_angle;
+<<<<<<< HEAD
 kalman_state kalman_x, kalman_y,kalman_z;
+=======
+int positioning_started = 0;
+float acc[3];
+
+>>>>>>> d040dcc... Positioning WIP
 int main(void)
 {	
-	int i;
+	int buttonPressed;
+	int targetDegrees;
   /* MCU Configuration----------------------------------------------------------*/
+<<<<<<< HEAD
 
+=======
+>>>>>>> d040dcc... Positioning WIP
   HAL_Init();
 
   /* Configure the system clock */
@@ -52,12 +75,53 @@ int main(void)
 		if(MS_PASSED){
 			
 			keypad_flag = !keypad_flag;
-			i=readButton();
-			if (i!=NOREAD)			printf("%d\n",i);	
-			//readButton();
-			
+			buttonPressed = readButton();
+			if (buttonPressed != NOREAD) {
+				if (buttonPressed != 10 && !positioning_started) targetDegrees = (targetDegrees * 10) + buttonPressed;
+				else {
+					positioning_started = 1;
+					position(targetDegrees);
+				}
+				printf("%d\n",buttonPressed);	
+			}			
 		}
 	}
+}
+
+void position(int targetDegrees) {
+	// We will be positioning along X axis -> roll
+	float angles[3];
+	float current_angle;
+	// Get angles
+	convertAccToAngle(acc, angles);
+	current_angle = angles[POSITIONING_AXIS];
+	
+	// if in range
+	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
+		display_flag = 0;
+	} else { // if outside
+		if (current_angle > targetDegrees) {
+			// display -->
+			display_flag=-1;
+		} else {
+			// display <--
+			display_flag=-2;
+		}
+	}
+}
+
+void convertAccToAngle(float* acc, float* angles) {
+	angles[0] = atan2(acc[0], sqrt(square((acc[1]) + square(acc[2]))));
+	angles[1] = atan2(acc[1], sqrt(square((acc[0]) + square(acc[2]))));
+	angles[2] = atan2(acc[2], sqrt(square((acc[1]) + square(acc[0]))));
+}
+
+float square(float x) {
+	return x*x;
+}
+	
+float absolute(float x) {
+	return x >= 0 ? x : -x;
 }
 
 /** System Clock Configuration*/

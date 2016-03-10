@@ -13,7 +13,8 @@ void init_keypad(void){
 	GPIO_Init_Keypad_Col.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 ;
 	setOutput(&GPIO_Init_Keypad_Col);
 }
-//complement of pin combination
+
+// Button definitions
 #define button1 0xe0e
 #define button4 0xd0e
 #define button7 0xb0e
@@ -26,7 +27,7 @@ void init_keypad(void){
 #define button6 0xd0b
 #define button9 0xb0b
 #define buttonF 0x70b
-#define buttonA 0xe07
+#define buttonA 0xe07 // Enter button
 #define button0 0xd07
 #define buttonC 0xb07
 #define buttonD 0x707
@@ -37,12 +38,10 @@ uint16_t read =INITREAD;
 int no_debouncing_flag=0;
 int debouncing_countdown=0;
 
-
-//needs delays somewhere
 uint8_t readButton(){
 	//uint16_t read =GPIO_PIN_All; //all 1s
 	if(keypad_flag){
-		read|= ((keypadGPIO->IDR) & GPIO_Init_Keypad_Row.Pin); //read only row pins and get all 0s
+		read |= ((keypadGPIO->IDR) & GPIO_Init_Keypad_Row.Pin); //read only row pins and get all 0s
 
 		
 		//printf("%d\n",read);	
@@ -61,15 +60,15 @@ uint8_t readButton(){
 			debouncing_countdown= debouncing_countdown<1 ? 0 : debouncing_countdown -1;
 		}
 		return NOREAD;
-	} else{
+	} else { // need to find column now!
 		uint16_t temp;
-		read|= ((keypadGPIO->IDR)& GPIO_Init_Keypad_Col.Pin); //read only col pins and get all 0s
+		read |= ((keypadGPIO->IDR)& GPIO_Init_Keypad_Col.Pin); //read only col pins and get all 0s
 		setInput(&GPIO_Init_Keypad_Row);
 		setOutput(&GPIO_Init_Keypad_Col);
 		debouncing_countdown=DEBOUNCE_DELAY;
 		//printf("%d\n",read);	
-		temp =read;
-		read =INITREAD;
+		temp = read;
+		read = INITREAD;
 		switch (temp){
 			case button1: return 1;
 			case button2: return 2;
