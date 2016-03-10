@@ -77,6 +77,7 @@ int main(void)
 				if (buttonPressed != 10 && !positioning_started) targetDegrees = (targetDegrees * 10) + buttonPressed;
 				else {
 					positioning_started = 1;
+					if (targetDegrees > 180) targetDegrees = targetDegrees - 180;
 					position(targetDegrees);
 				}
 				printf("%d\n",buttonPressed);	
