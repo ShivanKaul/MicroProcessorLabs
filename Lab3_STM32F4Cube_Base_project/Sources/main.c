@@ -103,7 +103,7 @@ int main(void)
 void position(int targetDegrees) {
 	// We will be positioning along X axis -> roll
 
-	printf("Measured angle:%f; Target Angle:%d\n",current_angle,targetDegrees);
+	//printf("Measured angle:%f; Target Angle:%d\n",current_angle,targetDegrees);
 	// if in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
 		display_flag = 0;

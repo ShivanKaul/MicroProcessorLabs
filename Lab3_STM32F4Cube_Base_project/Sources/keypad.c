@@ -33,7 +33,7 @@ void init_keypad(void){
 #define buttonD 0x707
 extern int keypad_flag;
 #define INITREAD 0
-#define DEBOUNCE_DELAY 1000
+#define DEBOUNCE_DELAY 300
 uint16_t read =INITREAD;
 int no_debouncing_flag=0;
 int debouncing_countdown=0;
