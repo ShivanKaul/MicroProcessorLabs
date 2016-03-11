@@ -4,7 +4,7 @@
 float getArcTan(float num, float denom1, float denom2){
 	float angle=atan2(sqrt(denom1*denom1 + denom2*denom2),num )*180/3.14159265;
 	angle=angle-90;
-	if (denom2 < 0){
+	if (denom2 > 0){
 		angle= -angle;
 	}
 	if (angle < 0){

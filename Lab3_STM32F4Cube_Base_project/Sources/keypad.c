@@ -44,7 +44,7 @@ uint8_t readButton(){
 		read |= ((keypadGPIO->IDR) & GPIO_Init_Keypad_Row.Pin); //read only row pins and get all 0s
 		if (read!=(INITREAD|GPIO_Init_Keypad_Row.Pin)){//button press
 			if (!debouncing_countdown) {// not zero
-				printf("rows %d\n",read);
+				//printf("rows %d\n",read);
 				setInput(&GPIO_Init_Keypad_Col);
 				setOutput	(&GPIO_Init_Keypad_Row);
 			} else {
@@ -64,7 +64,7 @@ uint8_t readButton(){
 		setInput(&GPIO_Init_Keypad_Row);
 		setOutput(&GPIO_Init_Keypad_Col);
 		debouncing_countdown=DEBOUNCE_DELAY;
-		printf("full %d\n",read);
+		//printf("full %d\n",read);
 		temp = read;
 		read = INITREAD;
 		switch (temp){
