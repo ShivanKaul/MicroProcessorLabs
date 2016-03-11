@@ -138,7 +138,7 @@ void position(int targetDegrees) {
 void calculateAngles (void) {
 	float angles[3];
 	//printf("W:%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
-	printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
+//	printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
 	// Filter things
 	Kalmanfilter_C (out, out, &kalman_x, 1);
 	Kalmanfilter_C (out+1, out+1, &kalman_y, 1);

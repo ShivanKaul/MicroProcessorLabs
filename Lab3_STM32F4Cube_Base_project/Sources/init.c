@@ -99,6 +99,7 @@ void LISInit(void) {
 */
 void TIMInit(void)
 {	
+	// Period is 1 ms for display
 	TIM_Base_InitTypeDef Timinit;
 	__TIM3_CLK_ENABLE();
 	Timinit.Period = 1000; /* 1 MHz to 1 kHz */
@@ -106,6 +107,7 @@ void TIMInit(void)
 	Timinit.CounterMode = TIM_COUNTERMODE_UP;
 	Timinit.ClockDivision = TIM_CLOCKDIVISION_DIV1; // default
 	
+	// As mandated by lab
 	TIM_LED_handle.Instance = TIM3;
 	TIM_LED_handle.Init = Timinit;
 	TIM_LED_handle.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED; //default
@@ -117,6 +119,7 @@ void TIMInit(void)
 	HAL_TIM_Base_Init(&TIM_LED_handle);
 	HAL_TIM_Base_Start_IT(&TIM_LED_handle);
 
+	// Set up NVIC
 	HAL_NVIC_SetPriority(TIM3_IRQn, 2,0);
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	
