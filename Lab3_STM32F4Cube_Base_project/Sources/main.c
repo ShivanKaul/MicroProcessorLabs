@@ -81,6 +81,7 @@ int main(void)
 				if (buttonPressed != NOREAD) { // Button is pressed and positioning has not started
 					if (buttonPressed != ENTER){ // We're still reading values from the keypad
 						// Collect keypad presses
+						printf("Pressed: %d\n", buttonPressed);
 						targetDegrees = (targetDegrees * 10) + buttonPressed;
 					} else {
 						// We have an Enter!
@@ -112,14 +113,14 @@ void position(int targetDegrees) {
 	// If in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
 		// Check if we want to be holding the value for the display
-		if (!HOLD_VALUE) {
+		//if (!HOLD_VALUE) {
 			acc_to_display = current_angle;
-			HOLD_VALUE = 1;
+			//HOLD_VALUE = 1;
 			display_flag = 0;
-		}
+		//}
 	} else { // if outside range
 		if (current_angle > targetDegrees) {
-			if (HOLD_VALUE) HOLD_VALUE = 0;
+			//if (HOLD_VALUE) HOLD_VALUE = 0;
 			// display vv
 			display_flag=-1;
 		} else {
@@ -137,13 +138,20 @@ void position(int targetDegrees) {
    */
 void calculateAngles (void) {
 	float angles[3];
-	//printf("W:%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
-//	printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
-	// Filter things
+	// NOTE1: We initially read acceleration in the interrupt, but on discussion
+	// with the TA on Friday, we've pushed it over here for the purposes of 
+	// the code submission.
+	LIS3DSH_ReadACC(out);
+	// NOTE2: Similarly, it was discussed whether filtering before calibrating 
+	// is better than calibrating before filtering. We had filtering before 
+	// calibrating. We were told that we should be calibrating first, and 
+	// then filtering. We are not entirely convinced. We spoke to Harsh, and
+	// we talked about how we are NOT using different filtering params
+	// for the Kalman filter for the 3 axes (refer to function kalman_init in 
+	// init.c, and hence calibration should be a linear transformation.
 	Kalmanfilter_C (out, out, &kalman_x, 1);
 	Kalmanfilter_C (out+1, out+1, &kalman_y, 1);
 	Kalmanfilter_C (out+2, out+2, &kalman_z, 1);
-	//printf("Y:%f,%f,%f\n",y_matrix.pData[0],y_matrix.pData[1],y_matrix.pData[2]);
 	arm_mat_mult_f32(&w_matrix,&x_matrix,&y_matrix);
 	convertAccToAngle(acc, angles);
 	// Get angles
