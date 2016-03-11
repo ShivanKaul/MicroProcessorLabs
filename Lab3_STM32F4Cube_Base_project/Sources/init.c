@@ -131,8 +131,8 @@ void TIMInit(void)
 */
 void kalman_init(void){
 	kalman_x.p= kalman_y.p=kalman_z.p=1000;
-	kalman_x.r= kalman_y.r=kalman_z.r=50; 
-	kalman_x.q= kalman_y.q=kalman_z.q=0.1; 
+	kalman_x.r= kalman_y.r=kalman_z.r=100; 
+	kalman_x.q= kalman_y.q=kalman_z.q=10; 
 }
 
 

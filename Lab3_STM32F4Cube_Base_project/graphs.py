@@ -58,14 +58,14 @@ def run(filename):
     current_filtered = []
     sums = []
     current = []
-    x_Kalman = KalmanFilter(p=1000, r=100, q=1, k=0)
-    x_Kalmanq=KalmanFilter(p=1000, r=100, q=10, k=0)
+    x_Kalman = KalmanFilter(p=1000, r=100, q=10, k=0)
+    x_Kalmanq=KalmanFilter(p=1000, r=100, q=1, k=0)
     x_Kalmanr=KalmanFilter(p=1000, r=5000, q=1, k=0)
     y_Kalman = KalmanFilter(p=1000, r=100, q=10, k=0)
     y_Kalmanq = KalmanFilter(p=1000, r=100, q=10, k=0)
     y_Kalmanr = KalmanFilter(p=1000, r=500, q=1, k=0)
-    z_Kalman = KalmanFilter(p=1000, r=100, q=1, k=0)
-    z_Kalmanq = KalmanFilter(p=1000, r=100, q=10, k=0)
+    z_Kalman = KalmanFilter(p=1000, r=100, q=10, k=0)
+    z_Kalmanq = KalmanFilter(p=1000, r=100, q=1, k=0)
     z_Kalmanr = KalmanFilter(p=1000, r=500, q=10, k=0)
 
 
