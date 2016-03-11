@@ -38,7 +38,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#define ARM_MATH_CM4
+
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "stm32f4xx_hal.h"
@@ -201,7 +201,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 	DISPLAY_DIGIT++;
   if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
 	angle_counter++;
-	if (angle_counter > 250){
+	if (angle_counter > 1000){
 		angle_counter = 0; // Wrap around for 3 digits
 		angle_flag = 1;
 	}

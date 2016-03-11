@@ -9,7 +9,7 @@
   */
 	
 /* Includes ------------------------------------------------------------------*/
-
+#define ARM_MATH_CM4            
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
 #include "stm32f4xx_hal_spi.h"
@@ -25,7 +25,7 @@
 
 
 /* Definitions ---------------------------------------------------------*/
-#define POSITIONING_AXIS 1
+#define POSITIONING_AXIS 0
 #define ANGLE_RANGE 5
 
 
