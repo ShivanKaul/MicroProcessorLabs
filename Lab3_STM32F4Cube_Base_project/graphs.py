@@ -50,7 +50,8 @@ def plot(plot_number, x, filtered_x, y, filtered_y, z, filtered_z,xm,ym,zm):
     plt.subplots_adjust(hspace=HSPACE)
 
     plt.show()
-
+START = 0
+END = 200
 
 def run(filename):
 
@@ -61,8 +62,8 @@ def run(filename):
     x_Kalmanq=KalmanFilter(p=1000, r=100, q=10, k=0)
     x_Kalmanr=KalmanFilter(p=1000, r=5000, q=1, k=0)
     y_Kalman = KalmanFilter(p=1000, r=100, q=10, k=0)
-    y_Kalmanq = KalmanFilter(p=1000, r=100, q=1, k=0)
-    y_Kalmanr = KalmanFilter(p=1000, r=500, q=10, k=0)
+    y_Kalmanq = KalmanFilter(p=1000, r=100, q=10, k=0)
+    y_Kalmanr = KalmanFilter(p=1000, r=500, q=1, k=0)
     z_Kalman = KalmanFilter(p=1000, r=100, q=1, k=0)
     z_Kalmanq = KalmanFilter(p=1000, r=100, q=10, k=0)
     z_Kalmanr = KalmanFilter(p=1000, r=500, q=10, k=0)
@@ -77,6 +78,7 @@ def run(filename):
         y_Kalman.x=y_Kalmanr.x=y_Kalman.x
         z_Kalman.x=z_Kalmanr.x=z_Kalman.x
         for index, row in enumerate(readings): 
+            if(index >= START and index <= END):
                 x, y, z = tuple(float(i) for i in row)
                 current.append(tuple((x, y, z)))
                 x_filt = x_Kalman.update(x)
