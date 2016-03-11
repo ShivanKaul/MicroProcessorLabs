@@ -1,20 +1,16 @@
-
-// #include "lis3dsh.h"
+/**
+ * @brief Keypad
+ * @author Yusaira Khan 
+ * @author Shivan Kaul
+ */
+ 
 #include "keypad.h"
 #include "stdio.h"
-GPIO_InitTypeDef GPIO_Init_Keypad_Row,GPIO_Init_Keypad_Col ;
 
+/* Definitions */
 #define keypadGPIO GPIOE
 
-void init_keypad(void){
-	__HAL_RCC_GPIOE_CLK_ENABLE();
-	GPIO_Init_Keypad_Row.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 ;
-	setInput(&GPIO_Init_Keypad_Row);
-	GPIO_Init_Keypad_Col.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
-	setOutput(&GPIO_Init_Keypad_Col);
-}
-
-// Button definitions
+// Buttons
 #define button1 0xee00
 #define button4 0xde00
 #define button7 0xbe00
@@ -31,16 +27,38 @@ void init_keypad(void){
 #define button0 0x7d00
 #define buttonC 0xb700
 #define buttonD 0x7700
-extern int keypad_flag;
 #define INITREAD 0
 #define DEBOUNCE_DELAY 300
-uint16_t read =INITREAD;
-int no_debouncing_flag=0;
-int debouncing_countdown=0;
 
-uint8_t readButton(){
-	//uint16_t read =GPIO_PIN_All; //all 1s
-	if(keypad_flag){
+/* Variables */
+int no_debouncing_flag = 0;
+int debouncing_countdown = 0;
+extern int keypad_flag;
+uint16_t read = INITREAD;
+GPIO_InitTypeDef GPIO_Init_Keypad_Row,GPIO_Init_Keypad_Col ;
+
+/**
+   * @brief Init keypad
+   * @param None
+   * @retval None
+   */
+void init_keypad(void){
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	GPIO_Init_Keypad_Row.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 ;
+	setInput(&GPIO_Init_Keypad_Row);
+	GPIO_Init_Keypad_Col.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+	setOutput(&GPIO_Init_Keypad_Col);
+}
+
+
+/**
+   * @brief Read the button pressed on the keypad by polling
+   * @param targetDegrees: the degrees to position to
+   * @retval None
+   */
+uint8_t readButton(void){
+	
+	if (keypad_flag) {
 		read |= ((keypadGPIO->IDR) & GPIO_Init_Keypad_Row.Pin); //read only row pins and get all 0s
 		if (read!=(INITREAD|GPIO_Init_Keypad_Row.Pin)){//button press
 			if (!debouncing_countdown) {// not zero
@@ -89,6 +107,11 @@ uint8_t readButton(){
 	}
 }
 
+/**
+   * @brief Set the relevant GPIO pins to be input
+   * @param targetDegrees: the degrees to position to
+   * @retval None
+   */
 void setInput(GPIO_InitTypeDef *Keypad_Input){
 	Keypad_Input->Speed = GPIO_SPEED_FREQ_LOW;
 	Keypad_Input->Mode = GPIO_MODE_INPUT;
@@ -96,11 +119,14 @@ void setInput(GPIO_InitTypeDef *Keypad_Input){
 	HAL_GPIO_Init(keypadGPIO, Keypad_Input);
 }
 
+/**
+   * @brief Set the relevant GPIO pins to be output
+   * @param targetDegrees: the degrees to position to
+   * @retval None
+   */
 void setOutput(GPIO_InitTypeDef* Keypad_Output){
 	Keypad_Output->Speed = GPIO_SPEED_FREQ_LOW;
 	Keypad_Output->Mode = GPIO_MODE_OUTPUT_PP;
 	Keypad_Output->Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(keypadGPIO, Keypad_Output);
-	//keypadGPIO->ODR &= (~Keypad_Output->Pin); //zeros in the row positions while outputting
-	//keypadGPIO->ODR &= (~GPIO_Init_Keypad_Col.Pin); //zeros in the column poisions while outputting
 }
