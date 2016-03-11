@@ -147,7 +147,7 @@ float x_matrix_values[]= {
 };
 
 /**
-* @brief Initialize matrices
+* @brief Initialize matrices to be used for calibration
 * @file init.c
 * @param None
 * @retval None

@@ -48,7 +48,7 @@ void updateDisplay(void) {
 	if(!display_flag) {
 		// LED displaying logic
 		// logic for displaying decimal points
-		mul = getNumDigs(padded);
+		mul = getDecimalPointPosition(padded);
 		for (i=mul; i<2;i++){
 			padded /= 10;
 		}
@@ -62,12 +62,14 @@ void updateDisplay(void) {
 }
 
 /**
-* @brief Update the 7 segment display
+* @brief The postion of the decimal point for values that are less than 10 or 100
 * @file display.c
-* @param None
-* @retval None
+* @param num	Value of the angle multiplied by 100
+* @retval 	0 	when the angle > 100 (abs(num) >10000)
+						1 	when the 100> angle > 10 (abs(num) >10)
+						2 	when the 10 >angle > 0 (otherwise)
 */
-int getNumDigs(int num) {
+int getDecimalPointPosition(int num) {
 	
 	num = num > 0 ? num : -num;
 	if (num > 10000/*100*100*/) return 0;
@@ -78,9 +80,10 @@ int getNumDigs(int num) {
 /**
 * @brief Get the register LED value
 * @file display.c
-* @param Number to convert
-* @param Place to convert
-* @retval Register LED value
+* @param num 		Digit to display
+* @param place	Place to display at
+* @param dp_pos	Position of decimal point in the full number to display
+* @retval Register LED bit setting
 */
 uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 	uint32_t val=LED_DEG;
@@ -93,6 +96,7 @@ uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 			return LED_EN_1|LED_EN_0|LED_D|LED_E|LED_C;
 		}
 	}
+	//bit mapping for Numbers
 	switch(num){
 		case 0:
 			val |= LED_A|LED_B|LED_C|LED_D|LED_E|LED_F;
@@ -125,15 +129,18 @@ uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 			val |= LED_A|LED_B|LED_C|LED_D|LED_F|LED_G;
 			break;
 	}
+	//sets the display enables for the current digit as well as potential decimal points
 	switch(place){
 		case 0:
 			val |=   LED_EN_0;
 		  break;
 		case 1:
-			val |= (((dp_pos & 1)<<4)& LED_DP)|LED_EN_1;
+			val |= (((dp_pos & 1)<<4)& LED_DP) //is less than 10
+							| LED_EN_1;
 		  break;
 		case 2:
-			val |= (((dp_pos & 2)<<3)& LED_DP)|LED_EN_2;
+			val |= (((dp_pos & 2)<<3)& LED_DP) //is less than 1
+							|LED_EN_2;
 		  break;
 	}
 	return val;

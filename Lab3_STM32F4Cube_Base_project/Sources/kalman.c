@@ -1,5 +1,13 @@
 #include "kalman.h"
 
+/**
+* @brief Computes the kalman estimation (in C)of output based on previous inputs
+* @param 	InputArray 		Reference to the array of measurements
+* @param 	OutputArray 	Reference to the empty where results will be stored
+* @param 	Length 				Length of both arrays 
+* @retval 	0	if no error occured
+* 					1 if error occured during calculation
+*/
 int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate, int Length) {
 	int i;
 	kstate->x=OutputArray[0];

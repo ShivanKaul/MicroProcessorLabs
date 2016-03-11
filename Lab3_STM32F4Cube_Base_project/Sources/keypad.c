@@ -1,5 +1,5 @@
 /**
- * @brief Keypad
+ * @brief Keypad Handling logic
  * @author Yusaira Khan 
  * @author Shivan Kaul
  */
@@ -38,7 +38,7 @@ uint16_t read = INITREAD;
 GPIO_InitTypeDef GPIO_Init_Keypad_Row,GPIO_Init_Keypad_Col ;
 
 /**
-   * @brief Init keypad
+   * @brief Initialize the GPIOs for the Keypad
    * @param None
    * @retval None
    */
@@ -53,8 +53,8 @@ void init_keypad(void){
 
 /**
    * @brief Read the button pressed on the keypad by polling
-   * @param targetDegrees: the degrees to position to
-   * @retval None
+   * @param None
+   * @retval The correct value of button read or Error code NOREAD
    */
 uint8_t readButton(void){
 	
@@ -109,7 +109,7 @@ uint8_t readButton(void){
 
 /**
    * @brief Set the relevant GPIO pins to be input
-   * @param targetDegrees: the degrees to position to
+   * @param Keypad_Input	the GPIO init struct that stores the pins used
    * @retval None
    */
 void setInput(GPIO_InitTypeDef *Keypad_Input){
@@ -121,7 +121,7 @@ void setInput(GPIO_InitTypeDef *Keypad_Input){
 
 /**
    * @brief Set the relevant GPIO pins to be output
-   * @param targetDegrees: the degrees to position to
+   * @param Keypad_Output	the GPIO init struct that stores the pins used
    * @retval None
    */
 void setOutput(GPIO_InitTypeDef* Keypad_Output){
