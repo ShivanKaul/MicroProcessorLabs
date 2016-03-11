@@ -27,7 +27,7 @@
 /* Definitions ---------------------------------------------------------*/
 #define POSITIONING_AXIS 0
 #define ANGLE_RANGE 5
-
+#define ENTER 10
 
 /* Private variables ---------------------------------------------------------*/
 //LIS3DSH_InitTypeDef LISInitStruct;
@@ -43,13 +43,14 @@ extern int MS_PASSED;
 int keypad_flag=0, display_flag=0,ACCELERATION_FLAG=1,angle_flag;
 TIM_HandleTypeDef tim;
 float typed_angle, current_angle;
-int FLICKER_COUNT = 0;
-
+int HOLD_VALUE = 0;
 kalman_state kalman_x, kalman_y,kalman_z;
 
 int positioning_started = 0;
 float acc[3],out[4], current_angle;
 extern float acc_to_display;
+
+
 
 int main(void)
 {	
@@ -84,7 +85,7 @@ int main(void)
 			else {
 				buttonPressed = readButton();
 				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
-					if (buttonPressed != 10){ 
+					if (buttonPressed != ENTER){ 
 						targetDegrees = (targetDegrees * 10) + buttonPressed;
 					}else {
 						positioning_started = 1;
@@ -104,18 +105,18 @@ int main(void)
 
 void position(int targetDegrees) {
 	// We will be positioning along X axis -> roll
-
 	printf("Measured angle:%f; Target Angle:%d;\n",current_angle,targetDegrees);
 	// if in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
-		if (FLICKER_COUNT % 5000 == 0) {
+		if (!HOLD_VALUE) {
 			acc_to_display = current_angle;
+			HOLD_VALUE = 1;
+			display_flag = 0;
 		}
-		FLICKER_COUNT++;
-		display_flag = 0;
 		//positioning_started = 0;
 	} else { // if outside
 		if (current_angle > targetDegrees) {
+			if (HOLD_VALUE) HOLD_VALUE = 0;
 			// display vv
 			display_flag=-1;
 		} else {
