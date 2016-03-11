@@ -8,10 +8,8 @@
 
 // Flags
 int DISPLAY_DIGIT = 0;
-//extern int ALARM_LED;
-//int RAISE_ALARM = 0;
-//extern int RAISE_ALARM_SEM;
-float acc_to_display=0;
+float acc_to_display = 0;
+extern int display_flag;
 
 // Define statments, for prettier code
 #define LED_EN_0 GPIO_PIN_7 /*pin 7*/
@@ -40,34 +38,42 @@ float acc_to_display=0;
 * @param None
 * @retval None
 */
-extern int display_flag;
+
 void updateDisplay(void) {
-	int padded = (int) (acc_to_display *100),
+	int padded = (int) (acc_to_display * 100),
 		mul,
 		i,
 		digit;
 	
 	if(!display_flag) {
 		// LED displaying logic
-		//logic for displaying   decimal points
+		// logic for displaying decimal points
 		mul = getNumDigs(padded);
 		for (i=mul; i<2;i++){
 			padded /= 10;
 		}
-		//logic for displaying 
+		// logic for displaying 
 		for (i=0; i< DISPLAY_DIGIT; i++){
 			padded /= 10;
 		}
 		digit = padded % 10;
-		GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT,mul);
-	} else { GPIOB->ODR = getRegisterLEDValue(display_flag, 0,0);} // Display arrow!
+		GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT, mul);
+	} else { GPIOB->ODR = getRegisterLEDValue(display_flag, 0, 0);} // Display arrow!
 }
- int getNumDigs(int num){
-	 num = num > 0 ? num : -num;
-	 if (num > 10000/*100*100*/) return 0;
-	 else if(num > 1000 /*10*100*/) return 1;
-	 else return 2;
- }
+
+/**
+* @brief Update the 7 segment display
+* @file display.c
+* @param None
+* @retval None
+*/
+int getNumDigs(int num) {
+	
+	num = num > 0 ? num : -num;
+	if (num > 10000/*100*100*/) return 0;
+	else if(num > 1000 /*10*100*/) return 1;
+	else return 2;
+}
 
 /**
 * @brief Get the register LED value
@@ -133,37 +139,3 @@ uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 	return val;
 	
 }
-
-///**
-//* @brief Set alarm on - flash LEDs on board
-//* @file display.c
-//* @param None
-//* @retval None
-//*/
-//void alarm_on(void){
-//	switch(ALARM_LED % 4) {
-//		case 0: 
-//			GPIOD->ODR = LED_Green;
-//			break;
-//		case 1:
-//			GPIOD->ODR = LED_Orange;
-//			break;
-//		case 2: 
-//			GPIOD->ODR = LED_Red;
-//			break;
-//		case 3: 
-//			GPIOD->ODR = LED_Blue;
-//			break;
-//	}
-//}
-
-///**
-//* @brief Switch off alarm LEDs
-//* @file display.c
-//* @param None
-//* @retval None
-//*/
-//void alarm_off(void){
-//	GPIOD->ODR = 0;
-//}
-
