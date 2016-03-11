@@ -187,7 +187,7 @@ extern float out[4];
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
 		LIS3DSH_ReadACC(out);
-		printf("%f, %f, %f\n", out[0], out[1], out[2]);
+		//printf("%f, %f, %f\n", out[0], out[1], out[2]);
 		ACCELERATION_FLAG =1;
 	}
 }
