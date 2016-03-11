@@ -34,6 +34,11 @@ kalman_state kalman_x, kalman_y,kalman_z;
 int positioning_started = 0;
 float acc[3], out[4];
 extern float acc_to_display;
+extern kalman_state kalman_x, kalman_y,kalman_z;
+extern arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
+extern float acc[3],out[4];
+int buttonPressed = 0;
+int targetDegrees = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
@@ -45,15 +50,13 @@ void calculateAngles (void);
 
 int main(void)
 {	
-	int buttonPressed=0;
-	int targetDegrees=0;
-  /* MCU Configuration----------------------------------------------------------*/
-  HAL_Init();
+  	/* MCU Configuration----------------------------------------------------------*/
+  	HAL_Init();
 
-  /* Configure the system clock */
-  SystemClock_Config();
+  	/* Configure the system clock */
+  	SystemClock_Config();
 	
-  /* Initialize all configured peripherals */
+  	/* Initialize all configured peripherals */
 	gpioInit();
 	init_keypad();
 	
@@ -62,10 +65,9 @@ int main(void)
 	TIMInit();
 	kalman_init();
 	matrix_init();
-
+	
 	// Super loop
 	while (1) {
-		// Millisecond has passed
 		if (MS_PASSED){
 			keypad_flag = !keypad_flag;
 			display_flag = 0;
@@ -99,18 +101,23 @@ int main(void)
 	}
 }
 
+/**
+   * @brief Handles the positioning logic
+   * @param targetDegrees: the degrees to position to
+   * @retval None
+   */
 void position(int targetDegrees) {
 	// We will be positioning along X axis -> roll
 	printf("Measured angle:%f; Target Angle:%d;\n",current_angle,targetDegrees);
 	// If in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
+		// Check if we want to be holding the value for the display
 		if (!HOLD_VALUE) {
 			acc_to_display = current_angle;
 			HOLD_VALUE = 1;
 			display_flag = 0;
 		}
-		//positioning_started = 0;
-	} else { // if outside
+	} else { // if outside range
 		if (current_angle > targetDegrees) {
 			if (HOLD_VALUE) HOLD_VALUE = 0;
 			// display vv
@@ -121,14 +128,18 @@ void position(int targetDegrees) {
 		}
 	}
 }
-extern kalman_state kalman_x, kalman_y,kalman_z;
-extern arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
-extern float acc[3],out[4];
 
-void calculateAngles( void ){
+/**
+   * @brief Calculates angles - filter them and use calibration matrix
+   * POSITIONING_AXIS specifies which axis to use for positioning
+   * @param None
+   * @retval None
+   */
+void calculateAngles (void) {
 	float angles[3];
-
+	//printf("W:%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
 	printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
+	// Filter things
 	Kalmanfilter_C (out, out, &kalman_x, 1);
 	Kalmanfilter_C (out+1, out+1, &kalman_y, 1);
 	Kalmanfilter_C (out+2, out+2, &kalman_z, 1);
