@@ -19,8 +19,9 @@
 #include "stdio.h"
 #include "display.h"
 #include "kalman.h"
+#include "arm_math.h"
+#include "mathhelper.h"
 
-#include "math.h"
 
 
 /* Definitions ---------------------------------------------------------*/
@@ -37,15 +38,16 @@ void convertAccToAngle(float*, float*);
 float square(float);
 float absolute(float);
 void position (int);
+void calculateAngles (void);
 extern int MS_PASSED;
-int keypad_flag=0, display_flag=0;
+int keypad_flag=0, display_flag=0,ACCELERATION_FLAG=1,angle_flag;
 TIM_HandleTypeDef tim;
 float typed_angle, current_angle;
 
 kalman_state kalman_x, kalman_y,kalman_z;
 
 int positioning_started = 0;
-float acc[3],out[4];
+float acc[3],out[4], current_angle;
 extern float acc_to_display;
 
 int main(void)
@@ -59,7 +61,6 @@ int main(void)
   SystemClock_Config();
 	
   /* Initialize all configured peripherals */
-		// Initialize GPIOs
 	gpioInit();
 	init_keypad();
 	// Initialize accelerometer
@@ -76,37 +77,32 @@ int main(void)
 			//printf("%f\n",acc_to_display);
 			if (positioning_started) {
 				position(targetDegrees);
-				acc_to_display=targetDegrees;
-				
+				acc_to_display=current_angle;
 			}
 			else {
 				buttonPressed = readButton();
 				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
-					//printf("Button pressed was: %d\n",buttonPressed);
 					if (buttonPressed != 10){ 
 					targetDegrees = (targetDegrees * 10) + buttonPressed;
-					//printf("current target degres %d", targetDegrees);
-					}
-					else {
-						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
+					}else {
 						positioning_started = 1;
+						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
 					}
 				}			
+			}
+			if(ACCELERATION_FLAG){//Every 25 Hz
+				calculateAngles();
+				ACCELERATION_FLAG=0;
 			}
 			updateDisplay();
 			MS_PASSED = 0;
 		}
-		
 	}
 }
 
 void position(int targetDegrees) {
 	// We will be positioning along X axis -> roll
-	float angles[3];
-	float current_angle;
-	// Get angles
-	convertAccToAngle(acc, angles);
-	current_angle = angles[POSITIONING_AXIS];
+
 	printf("Measured angle:%f; Target Angle:%d\n",current_angle,targetDegrees);
 	// if in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
@@ -115,31 +111,34 @@ void position(int targetDegrees) {
 		//positioning_started = 0;
 	} else { // if outside
 		if (current_angle > targetDegrees) {
-			// display -->
+			// display vv
 			display_flag=-1;
-			
 		} else {
-			// display <--
+			// display ^^
 			display_flag=-2;
-
 		}
 	}
 }
+extern kalman_state kalman_x, kalman_y,kalman_z;
+extern arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
+extern float acc[3],out[4];
 
-void convertAccToAngle(float* acc, float* angles) {
-	angles[0] = atan2(acc[0], sqrt(square((acc[1]) + square(acc[2]))))*180/3.14159265;
-	angles[1] = atan2(acc[1], sqrt(square((acc[0]) + square(acc[2]))))*180/3.14159265;
-	angles[2] = atan2(acc[2], sqrt(square((acc[1]) + square(acc[0]))))*180/3.14159265;
-}
+void calculateAngles( void ){
+	float angles[3];
 
-float square(float x) {
-	return x*x;
+	//printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
+	Kalmanfilter_C (out, out, &kalman_x, 1);
+	Kalmanfilter_C (out+1, out+1, &kalman_y, 1);
+	Kalmanfilter_C (out+2, out+2, &kalman_z, 1);
+		
+	arm_mat_mult_f32(&w_matrix,&x_matrix,&y_matrix);
+	convertAccToAngle(acc, angles);
+	// Get angles
+	if (angle_flag){
+		current_angle = angles[POSITIONING_AXIS];
+		angle_flag=0;
+	}
 }
-	
-float absolute(float x) {
-	return x >= 0 ? x : -x;
-}
-
 
 
 #ifdef USE_FULL_ASSERT

@@ -42,8 +42,6 @@ void gpioInit(void) {
 	GPIO_Init_Disp.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_Init_Disp.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOB, &GPIO_Init_Disp);
-
-	
 }
 
 
@@ -121,19 +119,21 @@ void kalman_init(void){
 
 }
 extern float acc[],out[];
-float x_matrix_values[]= { -4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
+float x_matrix_values[]= { 
+	-4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
   2.45104913e-06,-9.59368470e-04,5.16623301e-05,
  -2.34181711e-05,  -2.14577670e-05,  -9.78816908e-04,
   1.98397753e-01,   9.01443456e-03,   5.32591158e-02};
-float id[] ={1,1,1, 1,1,1, 1,1,1, 1,1,1};
+
 arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 void matrix_init(void){
-
 	arm_mat_init_f32(&x_matrix,4,3,x_matrix_values);
 	out[3]=1;
 	arm_mat_init_f32(&w_matrix,1,4,out);
 	arm_mat_init_f32(&y_matrix,1,3,acc);
 }
+
+
 /** System Clock Configuration*/
 void SystemClock_Config(void){
 

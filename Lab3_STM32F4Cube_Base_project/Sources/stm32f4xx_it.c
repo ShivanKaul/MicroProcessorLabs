@@ -44,8 +44,7 @@
 #include "stm32f4xx_hal.h"
 #include "stdio.h"
 #include "lis3dsh.h"
-#include "kalman.h"
-#include "arm_math.h"
+
 
 
 /** @addtogroup STM32F4xx_HAL_Examples
@@ -164,12 +163,7 @@ void SysTick_Handler(void)
 {
 			// Millisecond passed
 		MS_PASSED = 1;
-		// Alarm counter
-		//RAISE_ALARM_SEM++;
-		// Every 250 ticks of systick, move to next LED.
-	 // if (RAISE_ALARM_SEM % 250 == 0) {
-			//ALARM_LED++;
-		//}
+
 	HAL_IncTick();
 }
 
@@ -187,36 +181,17 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void){
  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
+extern int ACCELERATION_FLAG,angle_flag;
 
-extern kalman_state kalman_x, kalman_y,kalman_z;
-extern arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
-extern float acc[3],out[4];
+extern float out[4];
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
-		
 		LIS3DSH_ReadACC(out);
-		//printf("%f,%f,%f\n",w_matrix.pData[0],w_matrix.pData[1],w_matrix.pData[2]);
-		Kalmanfilter_C (out, out, &kalman_x, 1);
-		Kalmanfilter_C (out+1, out+1, &kalman_y, 1);
-		Kalmanfilter_C (out+2, out+2, &kalman_z, 1);
-		
-		arm_mat_mult_f32(&w_matrix,&x_matrix,&y_matrix);
-		
-		//printf("X: %f,%f,%f,%f\n",x_matrix.pData[0],x_matrix.pData[1],x_matrix.pData[2],x_matrix.pData[3]);
-		//printf("Y: %f,%f,%f\n",y_matrix.pData[0],y_matrix.pData[1],y_matrix.pData[2]);
-		//out[3]=1;
-		
-		
+		ACCELERATION_FLAG =1;
 	}
 }
 
-//float x_matrix_values[]= { -4.76541983e-05 ,-2.76761579e-07,-3.52490485e-07,
-//  2.45104913e-06,-9.59368470e-04,5.16623301e-05,
-// -2.34181711e-05,  -2.14577670e-05,  -9.78816908e-04,
-//  1.98397753e-01,   9.01443456e-03,   5.32591158e-02};
-void mult(void ){}
-
-
+int angle_counter;
 extern TIM_HandleTypeDef TIM_LED_handle;
 void TIM3_IRQHandler(){
 	HAL_TIM_IRQHandler(&TIM_LED_handle);
@@ -225,7 +200,11 @@ extern int DISPLAY_DIGIT;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 	DISPLAY_DIGIT++;
   if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
-
+	angle_counter++;
+	if (angle_counter > 250){
+		angle_counter = 0; // Wrap around for 3 digits
+		angle_flag = 1;
+	}
 }
 /**
   * @}

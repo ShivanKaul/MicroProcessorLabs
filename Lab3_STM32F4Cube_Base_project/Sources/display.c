@@ -49,11 +49,12 @@ void updateDisplay(void) {
 	
 	if(!display_flag) {
 		// LED displaying logic
+		//logic for displaying   decimal points
 		mul = getNumDigs(padded);
 		for (i=mul; i<2;i++){
 			padded /= 10;
 		}
-	
+		//logic for displaying 
 		for (i=0; i< DISPLAY_DIGIT; i++){
 			padded /= 10;
 		}

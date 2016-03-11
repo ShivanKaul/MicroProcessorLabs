@@ -515,6 +515,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\kalman.c</FilePath>
             </File>
+            <File>
+              <FileName>mathhelper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\mathhelper.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
