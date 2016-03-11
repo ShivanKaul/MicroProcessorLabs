@@ -518,7 +518,7 @@
             <File>
               <FileName>mathhelper.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\mathhelper.c</FilePath>
+              <FilePath>.\mathhelper.c</FilePath>
             </File>
           </Files>
         </Group>

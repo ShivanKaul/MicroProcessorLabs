@@ -17,11 +17,6 @@ void convertAccToAngle(float* acc, float* angles) {
 	angles[1] = getArcTan(acc[1],acc[0], acc[2]);
 	angles[2] = getArcTan(acc[2],acc[0], acc[1]);
 }
-
-
-float square(float x) {
-	return x*x;
-}
 	
 float absolute(float x) {
 	return x >= 0 ? x : -x;
