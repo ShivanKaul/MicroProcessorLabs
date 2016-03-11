@@ -131,12 +131,12 @@ def calibrate(X, Y, Z, filtered_arrays):
 
     Y = np.vstack((Y0, Y1, Y2, Y3, Y4, Y5))
     sum0=sum1=sum2=sum3=sum4=sum5=(0,0,0)
-    w0 = np.asarray(xyzmeans(filtered_arrays[0]))
+    w0 = np.asarray(xyzmeans(filtered_arrays[0][200:]))
     w1 = np.asarray(xyzmeans(filtered_arrays[1]))
     w2 = np.asarray(xyzmeans(filtered_arrays[2]))
-    w3 = np.asarray(xyzmeans(filtered_arrays[3]))
-    w4 = np.asarray(xyzmeans(filtered_arrays[4]))
-    w5 = np.asarray(xyzmeans(filtered_arrays[5]))
+    w3 = np.asarray(xyzmeans(filtered_arrays[3][200:350]))
+    w4 = np.asarray(xyzmeans(filtered_arrays[4][250:]))
+    w5 = np.asarray(xyzmeans(filtered_arrays[5][:250]))
 
     w = np.vstack((w0, w1, w2, w3, w4, w5))
 
@@ -160,6 +160,12 @@ run(filename="calrepeat.txt")
 # [  2.13216819e-05  -9.60147769e-04  -1.24902097e-05]
 # [  5.51935007e-06  -7.84617414e-07  -9.76906248e-04]
 # [  2.81318335e-02   5.23487466e-04   3.71370632e-02]]
+
+#[[ -9.66493725e-04   8.99609236e-06  -4.04356587e-05]
+# [  5.34716323e-05  -9.57953021e-04   1.80659093e-05]
+# [ -1.14160279e-05   8.36236388e-06  -9.84442844e-04]
+# [  3.16895602e-02   8.24420378e-03   6.24030831e-02]]
+
 
 #with all
 #[[ -3.79226121e-06  -1.62022318e-08  -2.70411389e-08]
