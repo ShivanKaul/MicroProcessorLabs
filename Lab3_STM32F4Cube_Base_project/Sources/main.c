@@ -1,14 +1,11 @@
 /**
-  ******************************************************************************
-  * File Name          : main.c
-  * Description        : Main program subroutine
-	* Author						 : Ashraf Suyyagh
-	* Version            : 1.0.0
-	* Date							 : January 14th, 2016
-  ******************************************************************************
-  */
+ * @brief Main file
+ * @author Yusaira Khan 
+ * @author Shivan Kaul
+ */
 	
 /* Includes ------------------------------------------------------------------*/
+/* ARM was complaining about not finding this */
 #define ARM_MATH_CM4            
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
@@ -22,15 +19,21 @@
 #include "arm_math.h"
 #include "mathhelper.h"
 
-
-
 /* Definitions ---------------------------------------------------------*/
 #define POSITIONING_AXIS 0
 #define ANGLE_RANGE 5
 #define ENTER 10
 
 /* Private variables ---------------------------------------------------------*/
-//LIS3DSH_InitTypeDef LISInitStruct;
+extern int MS_PASSED;
+int keypad_flag = 0, display_flag = 0,ACCELERATION_FLAG = 1,angle_flag;
+TIM_HandleTypeDef tim;
+float current_angle;
+int HOLD_VALUE = 0;
+kalman_state kalman_x, kalman_y,kalman_z;
+int positioning_started = 0;
+float acc[3], out[4];
+extern float acc_to_display;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
@@ -39,18 +42,6 @@ float square(float);
 float absolute(float);
 void position (int);
 void calculateAngles (void);
-extern int MS_PASSED;
-int keypad_flag=0, display_flag=0,ACCELERATION_FLAG=1,angle_flag;
-TIM_HandleTypeDef tim;
-float typed_angle, current_angle;
-int HOLD_VALUE = 0;
-kalman_state kalman_x, kalman_y,kalman_z;
-
-int positioning_started = 0;
-float acc[3],out[4], current_angle;
-extern float acc_to_display;
-
-
 
 int main(void)
 {	
@@ -65,37 +56,42 @@ int main(void)
   /* Initialize all configured peripherals */
 	gpioInit();
 	init_keypad();
+	
 	// Initialize accelerometer
 	LISInit();
 	TIMInit();
 	kalman_init();
 	matrix_init();
 
-	while (1){
+	// Super loop
+	while (1) {
+		// Millisecond has passed
 		if (MS_PASSED){
 			keypad_flag = !keypad_flag;
-			//acc_to_display=128;
 			display_flag = 0;
-			//printf("%f\n",acc_to_display);
+			
+			// If the user has entered an angle and pressed Enter
 			if (positioning_started) {
-				
 				position(targetDegrees);
-				
 			}
 			else {
 				buttonPressed = readButton();
-				if (buttonPressed != NOREAD) { // button is pressed and positioning has not started
-					if (buttonPressed != ENTER){ 
+				if (buttonPressed != NOREAD) { // Button is pressed and positioning has not started
+					if (buttonPressed != ENTER){ // We're still reading values from the keypad
+						// Collect keypad presses
 						targetDegrees = (targetDegrees * 10) + buttonPressed;
-					}else {
+					} else {
+						// We have an Enter!
 						positioning_started = 1;
+						// Angle wraparound
 						targetDegrees = targetDegrees % 180;
 					}
 				}			
 			}
-			if(ACCELERATION_FLAG){//Every 25 Hz
+			
+			if (ACCELERATION_FLAG){ // Every 25 Hz set by Systick
 				calculateAngles();
-				ACCELERATION_FLAG=0;
+				ACCELERATION_FLAG = 0;
 			}
 			updateDisplay();
 			MS_PASSED = 0;
@@ -106,7 +102,7 @@ int main(void)
 void position(int targetDegrees) {
 	// We will be positioning along X axis -> roll
 	printf("Measured angle:%f; Target Angle:%d;\n",current_angle,targetDegrees);
-	// if in range
+	// If in range
 	if (absolute(current_angle - targetDegrees) < ANGLE_RANGE) {
 		if (!HOLD_VALUE) {
 			acc_to_display = current_angle;

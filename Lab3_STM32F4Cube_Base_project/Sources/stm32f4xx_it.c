@@ -59,6 +59,11 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+int angle_counter;
+extern TIM_HandleTypeDef TIM_LED_handle;
+extern int ACCELERATION_FLAG,angle_flag;
+extern float out[4];
+extern int DISPLAY_DIGIT;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -181,32 +186,30 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void){
  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
-extern int ACCELERATION_FLAG,angle_flag;
 
-extern float out[4];
+// Accelerometer interrupt
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
 		LIS3DSH_ReadACC(out);
 		//printf("%f, %f, %f\n", out[0], out[1], out[2]);
-		ACCELERATION_FLAG =1;
+		ACCELERATION_FLAG = 1;
 	}
 }
 
-int angle_counter;
-extern TIM_HandleTypeDef TIM_LED_handle;
-void TIM3_IRQHandler(){
+void TIM3_IRQHandler() {
 	HAL_TIM_IRQHandler(&TIM_LED_handle);
 }
-extern int DISPLAY_DIGIT;
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 	DISPLAY_DIGIT++;
   if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
 	angle_counter++;
-	if (angle_counter > 1000){
+	if (angle_counter > 1000) {
 		angle_counter = 0; // Wrap around for 3 digits
 		angle_flag = 1;
 	}
 }
+
 /**
   * @}
   */ 
