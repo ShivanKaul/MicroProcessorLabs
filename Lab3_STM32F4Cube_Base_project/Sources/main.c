@@ -89,7 +89,7 @@ int main(void)
 						targetDegrees = (targetDegrees * 10) + buttonPressed;
 					}else {
 						positioning_started = 1;
-						if (targetDegrees > 180) targetDegrees = targetDegrees % 180;
+						targetDegrees = targetDegrees % 180;
 					}
 				}			
 			}

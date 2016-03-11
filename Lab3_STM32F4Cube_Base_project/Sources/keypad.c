@@ -4,33 +4,33 @@
 #include "stdio.h"
 GPIO_InitTypeDef GPIO_Init_Keypad_Row,GPIO_Init_Keypad_Col ;
 
-#define keypadGPIO GPIOD
+#define keypadGPIO GPIOE
 
 void init_keypad(void){
-	__HAL_RCC_GPIOD_CLK_ENABLE();
-	GPIO_Init_Keypad_Row.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 ;
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	GPIO_Init_Keypad_Row.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 ;
 	setInput(&GPIO_Init_Keypad_Row);
-	GPIO_Init_Keypad_Col.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 ;
+	GPIO_Init_Keypad_Col.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
 	setOutput(&GPIO_Init_Keypad_Col);
 }
 
 // Button definitions
-#define button1 0xe0e
-#define button4 0xd0e
-#define button7 0xb0e
-#define buttonE 0x70e
-#define button2 0xe0d
-#define button5 0xd0d
-#define button8 0xb0d
-#define buttonB 0x70d
-#define button3 0xe0b
-#define button6 0xd0b
-#define button9 0xb0b
-#define buttonF 0x70b
-#define buttonA 0xe07 // Enter button
-#define button0 0xd07
-#define buttonC 0xb07
-#define buttonD 0x707
+#define button1 0xee00
+#define button4 0xde00
+#define button7 0xbe00
+#define buttonE 0x7e00
+#define button2 0xed00
+#define button5 0xdd00
+#define button8 0xbd00
+#define buttonB 0xd700
+#define button3 0xeb00
+#define button6 0xdb00
+#define button9 0xbb00
+#define buttonF 0x7b00
+#define buttonA 0xe700 // Enter button
+#define button0 0x7d00
+#define buttonC 0xb700
+#define buttonD 0x7700
 extern int keypad_flag;
 #define INITREAD 0
 #define DEBOUNCE_DELAY 300
@@ -44,7 +44,7 @@ uint8_t readButton(){
 		read |= ((keypadGPIO->IDR) & GPIO_Init_Keypad_Row.Pin); //read only row pins and get all 0s
 		if (read!=(INITREAD|GPIO_Init_Keypad_Row.Pin)){//button press
 			if (!debouncing_countdown) {// not zero
-				
+				printf("rows %d\n",read);
 				setInput(&GPIO_Init_Keypad_Col);
 				setOutput	(&GPIO_Init_Keypad_Row);
 			} else {
@@ -64,7 +64,7 @@ uint8_t readButton(){
 		setInput(&GPIO_Init_Keypad_Row);
 		setOutput(&GPIO_Init_Keypad_Col);
 		debouncing_countdown=DEBOUNCE_DELAY;
-		
+		printf("full %d\n",read);
 		temp = read;
 		read = INITREAD;
 		switch (temp){
