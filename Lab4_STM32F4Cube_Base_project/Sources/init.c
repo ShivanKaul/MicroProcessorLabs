@@ -10,7 +10,7 @@
 LIS3DSH_InitTypeDef LISInitStruct; 
 LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 TIM_HandleTypeDef TIM_LED_handle;
-kalman_state kalman_x, kalman_y,kalman_z;
+kalman_state kalman_x, kalman_y,kalman_z, kalman_temp;
 float acc[3],out[4];
 arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 
@@ -131,6 +131,9 @@ void kalman_init(void){
 	kalman_x.p= kalman_y.p=kalman_z.p=1000;
 	kalman_x.r= kalman_y.r=kalman_z.r=100; 
 	kalman_x.q= kalman_y.q=kalman_z.q=10; 
+	kalman_temp.p =1000;
+	kalman_temp.q=0.1;
+	kalman_temp.r=50;
 }
 
 
@@ -162,6 +165,7 @@ void matrix_init(void){
 
 ADC_HandleTypeDef ADC1_Handle;
 void ADCInit(void) {
+	ADC_ChannelConfTypeDef ADC_Channel;
 	// ADC Init
 	__HAL_RCC_ADC1_CLK_ENABLE(); // Clock enable
 	ADC1_Handle.Instance = ADC1; // Instance
@@ -182,17 +186,8 @@ void ADCInit(void) {
 	if (HAL_ADC_Init(&ADC1_Handle) != HAL_OK){
 		Error_Handler(ADC_INIT_FAIL);
 	}
-}
-
-/**
-* @brief Initialize Channel - we use channel 16, which is hard set to be temperature sensor
-* @file init.c
-* @param None
-* @retval None
-*/
-void ChannelInit(void) {
-	// Channel
-	ADC_ChannelConfTypeDef ADC_Channel;
+	
+	//Initialize Channel - we use channel 16, which is hard set to be temperature sensor
 	ADC_Channel.Channel = ADC_CHANNEL_16; // Temperature sensor
 	ADC_Channel.Rank = 1;
 	ADC_Channel.SamplingTime = ADC_SAMPLETIME_480CYCLES;
@@ -203,5 +198,3 @@ void ChannelInit(void) {
         Error_Handler(ADC_INIT_FAIL);
 	}
 }
-
-

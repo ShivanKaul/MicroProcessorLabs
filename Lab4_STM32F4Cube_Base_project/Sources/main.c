@@ -11,11 +11,15 @@
 #include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "RTE_Components.h"             // Component selection
+#include "init.h"
 
-extern void initializeLED_IO			(void);
-extern void start_Thread_LED			(void);
-extern void Thread_LED(void const *argument);
-extern osThreadId tid_Thread_LED;
+
+extern void start_Thread_ADC			(void);
+extern void Thread_ADC(void const *argument);
+extern osThreadId tid_Thread_ADC;
+extern void start_Thread_7Seg			(void);
+extern void Thread_7Seg(void const *argument);
+extern osThreadId tid_Thread_7Seg;
 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
@@ -74,10 +78,15 @@ int main (void) {
   HAL_Init();                               /* Initialize the HAL Library     */
 
   SystemClock_Config();                     /* Configure the System Clock     */
+	
+	TIMInit();
+	ADCInit();
+	kalman_init();
+	matrix_init();
+	gpioInit();
 
 	/* User codes goes here*/
-  initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
-  start_Thread_LED();                       /* Create LED thread              */
+  start_Thread_ADC();                       /* Create LED thread              */
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */

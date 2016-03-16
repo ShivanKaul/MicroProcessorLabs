@@ -175,13 +175,14 @@ void TIM3_IRQHandler() {
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 	if (tim->Instance==TIM2){
-	DISPLAY_DIGIT++;
-  if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
-	angle_counter++;
-	if (angle_counter > 1000) {
-		angle_counter = 0; // Wrap around for 3 digits
-		angle_flag = 1;
-	}}
+		DISPLAY_DIGIT++;
+		if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
+		angle_counter++;
+		if (angle_counter > 1000) {
+			angle_counter = 0; // Wrap around for 3 digits
+			angle_flag = 1;
+		}
+	}
 }
 
 /**
