@@ -21,7 +21,7 @@ int start_Thread_Accelerometer	(void){
   if (!tid_Thread_Accelerometer) return(-1); 
   return(0);
 }
-#define ohai // ;) ^_.
+
 void Thread_Accelerometer(void const *argument){
 	osSignalWait (data_ready_flag,osWaitForever); 
 	osSignalClear(tid_Thread_Accelerometer,data_ready_flag); 

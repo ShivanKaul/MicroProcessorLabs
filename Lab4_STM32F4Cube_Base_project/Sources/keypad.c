@@ -11,16 +11,28 @@ osThreadId tid_Thread_Keypad;
 void Thread_Keypad(void const *argument);
 osThreadDef(Thread_Keypad, osPriorityNormal, 1, 0);
 
+osMutexId  button_mutex; 
+osMutexDef (button_mutex); 
+#define NOREAD 100
 
-#define data_ready_flag 1ss
 int start_Thread_Keypad	(void){
 	tid_Thread_Keypad = osThreadCreate(osThread(Thread_Keypad), NULL); // Start thread
   if (!tid_Thread_Keypad) return(-1); 
   return(0);
 }
 
+int buttonPressed, keypad_flag = 0;
+float getSetButton(int button, int setmode);
 void Thread_Keypad(void const *argument){
-	
+	while (1) {
+		// frequency of scanning? wait for 1 ms
+		osDelay(1);
+		keypad_flag = !keypad_flag;
+		buttonPressed = readButton();
+		if (buttonPressed != NOREAD) { // Button is pressed
+			getSetButton(buttonPressed, 1);
+		}
+	}
 }
 
 /* Definitions */

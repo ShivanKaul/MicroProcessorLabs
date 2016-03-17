@@ -74,15 +74,19 @@ int start_Thread_7Seg (void) {
 * @retval None
 */
 	
-float getSetValue(float,int, int);	
+float getSetValue(float,int, int);
+int getSetButton(int, int);	
+
 float temperature_to_display;
+int button = 0;
 void updateDisplay(void) {
 	int padded = 0,
 		mul,
 		i,
 		digit;
 	// wait for semaphore from keypad
-		padded = (int)(getSetValue(0,0,2) *100);
+		button = getSetButton(0, 0);
+		padded = (int)(getSetValue(0,0,button) *100);
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded);
