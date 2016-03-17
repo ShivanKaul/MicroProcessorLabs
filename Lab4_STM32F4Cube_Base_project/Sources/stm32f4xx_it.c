@@ -153,39 +153,21 @@ int DISPLAY_DIGIT;
 /*  available peripheral interrupt handler's name please refer to the startup */
 /*  file (startup_stm32f4xx.s).                                               */
 /******************************************************************************/
-/**
-  * @brief  This function handles EXTI0 interrupt request.
-  * @param  None
-  * @retval None
-  */
-void EXTI0_IRQHandler(void){
- HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
-}
-extern osThreadId tid_Thread_Accelerometer;
-#define data_ready_flag 1
-// Accelerometer interrupt
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if (GPIO_Pin==GPIO_PIN_0){
-		ACCELERATION_FLAG = 1;
-	}
-}
 
-void TIM2_IRQHandler() {
-	HAL_TIM_IRQHandler(&TIM_LED_handle);
-}
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
-	//if (tim->Instance==TIM2){
-		
-		Seg7_MS_PASSED=1;
-		if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
-//		angle_counter++;
-//		if (angle_counter > 1000) {
-//			angle_counter = 0; // Wrap around for 3 digits
-//			angle_flag = 1;
-//		}
-	//}
-}
+
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
+//	//if (tim->Instance==TIM2){
+//		
+//		Seg7_MS_PASSED=1;
+//		if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
+////		angle_counter++;
+////		if (angle_counter > 1000) {
+////			angle_counter = 0; // Wrap around for 3 digits
+////			angle_flag = 1;
+////		}
+//	//}
+//}
 
 /**
   * @}

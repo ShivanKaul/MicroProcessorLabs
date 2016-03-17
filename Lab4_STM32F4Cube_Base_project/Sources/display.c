@@ -74,14 +74,15 @@ int start_Thread_7Seg (void) {
 * @retval None
 */
 	
-float getSetTemperature(float newTemp,int setmode);	
+float getSetValue(float,int, int);	
 float temperature_to_display;
 void updateDisplay(void) {
 	int padded = 0,
 		mul,
 		i,
 		digit;
-		padded = (int)(getSetTemperature(35,0) *100);
+	// wait for semaphore from keypad
+		padded = (int)(getSetValue(0,0,2) *100);
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded);
@@ -179,14 +180,7 @@ void TIM2_IRQHandler() {
 	HAL_TIM_IRQHandler(&TIM_LED_handle);
 }
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
-	//if (tim->Instance==TIM2){
 		
 		Seg7_MS_PASSED=1;
-		//if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
-//		angle_counter++;
-//		if (angle_counter > 1000) {
-//			angle_counter = 0; // Wrap around for 3 digits
-//			angle_flag = 1;
-//		}
-	//}
+
 }

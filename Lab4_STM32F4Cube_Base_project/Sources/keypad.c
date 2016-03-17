@@ -6,7 +6,7 @@
  
 #include "keypad.h"
 #include "stdio.h"
-
+#include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 osThreadId tid_Thread_Keypad;
 void Thread_Keypad(void const *argument);
 osThreadDef(Thread_Keypad, osPriorityNormal, 1, 0);
@@ -72,6 +72,7 @@ void init_keypad(void){
    * @param None
    * @retval The correct value of button read or Error code NOREAD
    */
+int keypad_flag;
 uint8_t readButton(void){
 	
 	if (keypad_flag) {

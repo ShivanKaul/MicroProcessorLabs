@@ -43,8 +43,8 @@ int NOW_CONVERT,NOW_CHANGE_TEMP,ALARM;
 
 extern ADC_HandleTypeDef	ADC1_Handle;
 extern kalman_state kalman_temp;
-float getSetTemperature(float newTemp,int setmode);
-/**
+float getSetValue(float newValue,int setmode, int index);
+	/**
 * @brief Polls the ADC for temperature digitization, and filters using Kalman filter
 * 		> Set alarm if temperature above threshold
 * @file main.c
@@ -66,7 +66,7 @@ void poll() { //~10 us to complete?
 			Kalmanfilter_C(&temperature, &filtered_temp, &kalman_temp, 1);
 		
 	//	printf("%f\n", filtered_temp);
-			getSetTemperature(filtered_temp,1);
+			getSetValue(filtered_temp,1,2);
 			if (filtered_temp > ALARM_THRESHOLD){
 				ALARM = 1;
 			} else ALARM = 0;
