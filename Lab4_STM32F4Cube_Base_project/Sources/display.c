@@ -52,7 +52,7 @@ int start_Thread_7Seg (void) {
   if (!tid_Thread_7Seg) return(-1); 
   return(0);
 }
-#define flicker_bound 256
+#define flicker_bound 64
 int flicker_count;
  /*----------------------------------------------------------------------------
 *      Thread  'LED_Thread': Toggles LED
@@ -82,38 +82,38 @@ int flicker_count;
 	
 	
 
+float getSetValue(float,int, int);	
 	
-int padded_stored, mul,alarm_flag, display_state=1;
+int padded_stored, mul,alarm_display_flag=1, display_state=1;
 
-float getSetValue(float,int, int);
+
 int getSetButton(int, int);	
 
 
-float temperature_to_display;
+#define ALARM_THRESHOLD 35
 int buttonDisplay = 1;
 void updateDisplay(void) {
 	int padded = 0,	i,digit;
 	
 	if (!flicker_count){
+		float temperature_for_alarm;
 	// wait for semaphore from keypad
-
-		padded_stored = (int)(getSetValue(0,0,1) *100);
-
 		buttonDisplay = getSetButton(0, 0);
-		
-		padded = (int)(getSetValue(0,0,buttonDisplay) *100);
-
+		padded_stored = (int)(getSetValue(0,0,buttonDisplay) *100);
 		// LED displaying logic
 		// logic for displaying decimal points
-		mul = getDecimalPointPosition(padded);
+		mul = getDecimalPointPosition(padded_stored);
 		for (i=mul; i<2;i++){
 			padded_stored /= 10;
 		}
-
-		if(!alarm_flag ){
+		
+		temperature_for_alarm = getSetValue(0,0,2);
+		if (temperature_for_alarm < ALARM_THRESHOLD){
+		//if(!alarm_display_flag ){
 			display_state = 1;
 		}else {
 			display_state = !display_state;
+			
 		}
 	}	
 	if (display_state){
@@ -125,7 +125,7 @@ void updateDisplay(void) {
 		digit = padded % 10;
 		GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT, mul);
 	} else {
-			//GPIOB->ODR = 0;
+			GPIOB->ODR = 0;
 
 	}
 }

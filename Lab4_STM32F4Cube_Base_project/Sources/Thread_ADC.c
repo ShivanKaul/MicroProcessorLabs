@@ -40,7 +40,7 @@ int start_Thread_ADC (void) {
 	
 	
 int NOW_CONVERT,NOW_CHANGE_TEMP,ALARM;
-#define ALARM_THRESHOLD 35
+
 
 extern ADC_HandleTypeDef	ADC1_Handle;
 extern kalman_state kalman_temp;
@@ -68,9 +68,7 @@ void poll() { //~10 us to complete?
 		
 	//	printf("%f\n", filtered_temp);
 			getSetValue(filtered_temp,1,2);
-			if (filtered_temp > ALARM_THRESHOLD){
-				ALARM = 1;
-			} else ALARM = 0;
+
 			
 	}
 }
