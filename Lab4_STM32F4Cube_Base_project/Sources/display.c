@@ -90,24 +90,27 @@ int padded_stored, mul,alarm_display_flag=1, display_state=1;
 int getSetButton(int, int);	
 
 
-#define ALARM_THRESHOLD 35
+#define ALARM_THRESHOLD 36
 int buttonDisplay = 1;
 void updateDisplay(void) {
-	int padded = 0,	i,digit;
+	int padded,	i,digit;
 	
 	if (!flicker_count){
-		float temperature_for_alarm;
+		float temperature_for_alarm,read_value;
 	// wait for semaphore from keypad
 		buttonDisplay = getSetButton(0, 0);
-		padded_stored = (int)(getSetValue(0,0,buttonDisplay) *100);
+		read_value=getSetValue(0,0,buttonDisplay);
+		padded_stored = (int)(read_value *100);
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded_stored);
 		for (i=mul; i<2;i++){
 			padded_stored /= 10;
 		}
-		
-		temperature_for_alarm = getSetValue(0,0,2);
+		if(buttonDisplay==2){
+		temperature_for_alarm = read_value;
+		}else{
+		temperature_for_alarm = getSetValue(0,0,2);}
 		if (temperature_for_alarm < ALARM_THRESHOLD){
 		//if(!alarm_display_flag ){
 			display_state = 1;
