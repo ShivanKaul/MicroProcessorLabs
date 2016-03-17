@@ -44,6 +44,7 @@ osThreadDef(Thread_7Seg, osPriorityNormal, 1, 0);
  *---------------------------------------------------------------------------*/
 osMutexId  disp_mutex; 
 osMutexDef (disp_mutex);  
+ 
 int start_Thread_7Seg (void) {
 
 	disp_mutex = osMutexCreate(osMutex(disp_mutex)); 
@@ -51,19 +52,23 @@ int start_Thread_7Seg (void) {
   if (!tid_Thread_7Seg) return(-1); 
   return(0);
 }
-
+#define flicker_bound 256
+int flicker_count;
  /*----------------------------------------------------------------------------
 *      Thread  'LED_Thread': Toggles LED
  *---------------------------------------------------------------------------*/
 	void Thread_7Seg (void const *argument) {
 		while(1){
 			
-				osDelay(5); //1khz
+				osDelay(5); //200Hz
 			//if (Seg7_MS_PASSED){
 				Seg7_MS_PASSED=0;
 				updateDisplay();
 			DISPLAY_DIGIT++;
 			if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0;
+			
+			flicker_count= (flicker_count + 1) % flicker_bound;
+			
 		//}
 			}
 	}
@@ -73,29 +78,44 @@ int start_Thread_7Seg (void) {
 * @param None
 * @retval None
 */
+
+	
 	
 float getSetValue(float,int, int);	
+	
+int padded_stored, mul,alarm_flag, display_state=1;
 float temperature_to_display;
 void updateDisplay(void) {
-	int padded = 0,
-		mul,
-		i,
-		digit;
+	int padded = 0,	i,digit;
+	
+	if (!flicker_count){
 	// wait for semaphore from keypad
-		padded = (int)(getSetValue(0,0,1) *100);
+		padded_stored = (int)(getSetValue(0,0,1) *100);
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded);
 		for (i=mul; i<2;i++){
-			padded /= 10;
+			padded_stored /= 10;
 		}
+
+		if(!alarm_flag ){
+			display_state = 1;
+		}else {
+			display_state = !display_state;
+		}
+	}	
+	if (display_state){
+		padded = padded_stored;
 		// logic for displaying 
 		for (i=0; i< DISPLAY_DIGIT; i++){
 			padded /= 10;
 		}
 		digit = padded % 10;
 		GPIOB->ODR = getRegisterLEDValue(digit,DISPLAY_DIGIT, mul);
-	
+	} else {
+			//GPIOB->ODR = 0;
+
+	}
 }
 
 /**

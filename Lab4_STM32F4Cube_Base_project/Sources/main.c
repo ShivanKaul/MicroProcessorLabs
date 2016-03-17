@@ -37,8 +37,6 @@ uint32_t HAL_GetTick(void) {
 
 kalman_state kalman_temp=INIT_KALMAN;
 
-
-
 /**
   * Main function
   */

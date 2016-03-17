@@ -16,12 +16,13 @@ void Thread_ADC (void const *argument);                 // thread function
 osThreadId tid_Thread_ADC;                              // thread id
 osThreadDef(Thread_ADC, osPriorityNormal, 1, 0);
 void poll(void);
-
+osMutexId  alarm_mutex; 
+osMutexDef (alarm_mutex); 
 /*----------------------------------------------------------------------------
  *      Create the thread within RTOS context
  *---------------------------------------------------------------------------*/
 int start_Thread_ADC (void) {
-
+	alarm_mutex = osMutexCreate(osMutex(alarm_mutex));
   tid_Thread_ADC = osThreadCreate(osThread(Thread_ADC ), NULL); // Start LED_Thread
   if (!tid_Thread_ADC) return(-1); 
   return(0);
@@ -70,6 +71,7 @@ void poll() { //~10 us to complete?
 			if (filtered_temp > ALARM_THRESHOLD){
 				ALARM = 1;
 			} else ALARM = 0;
+			
 	}
 }
 /*----------------------------------------------------------------------------
