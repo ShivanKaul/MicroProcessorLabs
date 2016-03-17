@@ -10,7 +10,7 @@
 */
 int Kalmanfilter_C (float* InputArray, float* OutputArray, kalman_state* kstate, int Length) {
 	int i;
-	kstate->x=OutputArray[0];
+	
 	
 	for (i = 0;i< Length;i++){
 		//Equation as given in class

@@ -15,7 +15,7 @@
    * @retval None
    */
 	 
-	 //AT TAs & STUDENTS
+	 //AT TAs & STUDENTS ;) ;)
 	 //Feel free to use or discard this function, you can add more Error definitions and assign 
 	 //them codes in the supporting_functions.h file
 	 
@@ -50,3 +50,4 @@ void Error_Handler			(uint16_t error_code){
 		break;
 	}
 }
+

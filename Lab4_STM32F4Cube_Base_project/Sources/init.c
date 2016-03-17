@@ -10,7 +10,7 @@
 LIS3DSH_InitTypeDef LISInitStruct; 
 LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
 TIM_HandleTypeDef TIM_LED_handle;
-kalman_state kalman_x, kalman_y,kalman_z, kalman_temp;
+kalman_state kalman_x, kalman_y,kalman_z;
 float acc[3],out[4];
 arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 
@@ -131,9 +131,9 @@ void kalman_init(void){
 	kalman_x.p= kalman_y.p=kalman_z.p=1000;
 	kalman_x.r= kalman_y.r=kalman_z.r=100; 
 	kalman_x.q= kalman_y.q=kalman_z.q=10; 
-	kalman_temp.p =1000;
-	kalman_temp.q=0.1;
-	kalman_temp.r=50;
+//	kalman_temp.p =1000;
+//	kalman_temp.q=0.1;
+//	kalman_temp.r=50;
 }
 
 
@@ -197,4 +197,40 @@ void ADCInit(void) {
 	if (HAL_ADC_ConfigChannel(&ADC1_Handle, &ADC_Channel) != HAL_OK) {
         Error_Handler(ADC_INIT_FAIL);
 	}
+}
+
+/**
+  * System Clock Configuration
+  */
+void SystemClock_Config(void) {
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+
+  /* Enable Power Control clock */
+  __HAL_RCC_PWR_CLK_ENABLE();
+
+  /* The voltage scaling allows optimizing the power consumption when the
+     device is clocked below the maximum system frequency (see datasheet). */
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /* Enable HSE Oscillator and activate PLL with HSE as source */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 336;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
+  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
+     clocks dividers */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 |
+                                RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 }

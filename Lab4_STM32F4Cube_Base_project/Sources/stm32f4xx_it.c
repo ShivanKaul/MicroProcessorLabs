@@ -59,11 +59,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-int angle_counter;
-extern TIM_HandleTypeDef TIM_LED_handle;
-int ACCELERATION_FLAG,angle_flag;
-extern float out[4];
-int DISPLAY_DIGIT;
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -144,8 +140,12 @@ void DebugMon_Handler(void)
 }
 
 
-int MS_PASSED=0;
-
+int Seg7_MS_PASSED=0;
+int angle_counter;
+extern TIM_HandleTypeDef TIM_LED_handle;
+int ACCELERATION_FLAG,angle_flag;
+extern float out[4];
+int DISPLAY_DIGIT;
 
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */
@@ -161,7 +161,8 @@ int MS_PASSED=0;
 void EXTI0_IRQHandler(void){
  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
-
+extern osThreadId tid_Thread_Accelerometer;
+#define data_ready_flag 1
 // Accelerometer interrupt
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
@@ -169,20 +170,21 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	}
 }
 
-void TIM3_IRQHandler() {
+void TIM2_IRQHandler() {
 	HAL_TIM_IRQHandler(&TIM_LED_handle);
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
-	if (tim->Instance==TIM2){
-		DISPLAY_DIGIT++;
+	//if (tim->Instance==TIM2){
+		
+		Seg7_MS_PASSED=1;
 		if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
-		angle_counter++;
-		if (angle_counter > 1000) {
-			angle_counter = 0; // Wrap around for 3 digits
-			angle_flag = 1;
-		}
-	}
+//		angle_counter++;
+//		if (angle_counter > 1000) {
+//			angle_counter = 0; // Wrap around for 3 digits
+//			angle_flag = 1;
+//		}
+	//}
 }
 
 /**

@@ -11,6 +11,7 @@
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "stm32f4xx_hal.h"
 #include "kalman.h"
+#include "stdio.h"
 void Thread_ADC (void const *argument);                 // thread function
 osThreadId tid_Thread_ADC;                              // thread id
 osThreadDef(Thread_ADC, osPriorityNormal, 1, 0);
@@ -31,7 +32,7 @@ int start_Thread_ADC (void) {
  *---------------------------------------------------------------------------*/
 	void Thread_ADC (void const *argument) {
 		while(1){
-				osDelay(10); //100 Hz
+				osDelay(40); //25 Hz
 				poll();
 			}
 	}
@@ -39,9 +40,10 @@ int start_Thread_ADC (void) {
 	
 int NOW_CONVERT,NOW_CHANGE_TEMP,ALARM;
 #define ALARM_THRESHOLD 35
-float temperature_to_display;
+
 extern ADC_HandleTypeDef	ADC1_Handle;
 extern kalman_state kalman_temp;
+float getSetTemperature(float newTemp,int setmode);
 /**
 * @brief Polls the ADC for temperature digitization, and filters using Kalman filter
 * 		> Set alarm if temperature above threshold
@@ -50,6 +52,7 @@ extern kalman_state kalman_temp;
 * @retval None
 */
 void poll() { //~10 us to complete?
+	
 	float  voltage, temperature, filtered_temp;
 	HAL_ADC_Start(&ADC1_Handle);
 	if (HAL_ADC_PollForConversion(&ADC1_Handle, 10) == HAL_OK)
@@ -62,11 +65,8 @@ void poll() { //~10 us to complete?
 			// Use Kalman filter to get filtered value and store in 'filtered_temp'
 			Kalmanfilter_C(&temperature, &filtered_temp, &kalman_temp, 1);
 		
-			printf("%f\n", filtered_temp);
-			if (NOW_CHANGE_TEMP) {
-				temperature_to_display = filtered_temp;
-				NOW_CHANGE_TEMP = 0;
-			}
+	//	printf("%f\n", filtered_temp);
+			getSetTemperature(filtered_temp,1);
 			if (filtered_temp > ALARM_THRESHOLD){
 				ALARM = 1;
 			} else ALARM = 0;

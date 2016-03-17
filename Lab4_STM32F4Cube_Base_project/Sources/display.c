@@ -8,8 +8,8 @@
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "stm32f4xx_hal.h"
 // Flags
-extern int DISPLAY_DIGIT;
-float acc_to_display = 0;
+extern int DISPLAY_DIGIT,Seg7_MS_PASSED;
+//extern float temperature_to_display;
 extern int display_flag;
 
 // Define statments, for prettier code
@@ -42,8 +42,11 @@ osThreadDef(Thread_7Seg, osPriorityNormal, 1, 0);
 /*----------------------------------------------------------------------------
  *      Create the thread within RTOS context
  *---------------------------------------------------------------------------*/
+osMutexId  disp_mutex; 
+osMutexDef (disp_mutex);  
 int start_Thread_7Seg (void) {
 
+	disp_mutex = osMutexCreate(osMutex(disp_mutex)); 
   tid_Thread_7Seg = osThreadCreate(osThread(Thread_7Seg ), NULL); // Start LED_Thread
   if (!tid_Thread_7Seg) return(-1); 
   return(0);
@@ -54,8 +57,14 @@ int start_Thread_7Seg (void) {
  *---------------------------------------------------------------------------*/
 	void Thread_7Seg (void const *argument) {
 		while(1){
-				osDelay(1);
+			
+				osDelay(5); //1khz
+			//if (Seg7_MS_PASSED){
+				Seg7_MS_PASSED=0;
 				updateDisplay();
+			DISPLAY_DIGIT++;
+			if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0;
+		//}
 			}
 	}
 /**
@@ -64,14 +73,15 @@ int start_Thread_7Seg (void) {
 * @param None
 * @retval None
 */
-
+	
+float getSetTemperature(float newTemp,int setmode);	
+float temperature_to_display;
 void updateDisplay(void) {
-	int padded = (int) (acc_to_display * 100),
+	int padded = 0,
 		mul,
 		i,
 		digit;
-	
-
+		padded = (int)(getSetTemperature(35,0) *100);
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded);
@@ -113,15 +123,7 @@ int getDecimalPointPosition(int num) {
 */
 uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 	uint32_t val=LED_DEG;
-	//up and down arrows
-	if (num < 0){
-		if (num == -1){ // up arrow
-			return LED_EN_1|LED_EN_0|LED_A|LED_B|LED_F;
-		}
-		if (num == -2){ // down arrow
-			return LED_EN_1|LED_EN_0|LED_D|LED_E|LED_C;
-		}
-	}
+
 	//bit mapping for Numbers
 	switch(num){
 		case 0:
@@ -161,14 +163,30 @@ uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 			val |=   LED_EN_0;
 		  break;
 		case 1:
-			val |= (((dp_pos & 1)<<4)& LED_DP) //is less than 10
+			val |= (((dp_pos & 1)<<4)& LED_DP) //is less than 100
 							| LED_EN_1;
 		  break;
 		case 2:
-			val |= (((dp_pos & 2)<<3)& LED_DP) //is less than 1
+			val |= (((dp_pos & 2)<<3)& LED_DP) //is less than 10
 							|LED_EN_2;
 		  break;
 	}
 	return val;
 	
+}
+extern TIM_HandleTypeDef TIM_LED_handle;
+void TIM2_IRQHandler() {
+	HAL_TIM_IRQHandler(&TIM_LED_handle);
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
+	//if (tim->Instance==TIM2){
+		
+		Seg7_MS_PASSED=1;
+		//if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
+//		angle_counter++;
+//		if (angle_counter > 1000) {
+//			angle_counter = 0; // Wrap around for 3 digits
+//			angle_flag = 1;
+//		}
+	//}
 }
