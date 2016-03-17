@@ -23,10 +23,11 @@ int start_Thread_Accelerometer	(void){
 }
 
 void Thread_Accelerometer(void const *argument){
+	while(1){
 	osSignalWait (data_ready_flag,osWaitForever); 
 	osSignalClear(tid_Thread_Accelerometer,data_ready_flag); 
 	calculateAngles();
-	
+	}
 	
 }
 extern float getSetValue(float newValue,int setmode, int index);
@@ -109,6 +110,6 @@ void EXTI0_IRQHandler(void){
 // Accelerometer interrupt
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
-		 osSignalSet ( tid_Thread_Accelerometer, data_ready_flag);
+		 osSignalSet (tid_Thread_Accelerometer, data_ready_flag);
 	}
 }

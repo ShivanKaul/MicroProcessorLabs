@@ -78,7 +78,7 @@ float getSetValue(float,int, int);
 int getSetButton(int, int);	
 
 float temperature_to_display;
-int button = 0;
+int button = 1;
 void updateDisplay(void) {
 	int padded = 0,
 		mul,

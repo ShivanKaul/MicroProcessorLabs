@@ -72,7 +72,7 @@ int main (void) {
   start_Thread_ADC();                       /* Create LED thread              */
 	start_Thread_7Seg();
 	start_Thread_Accelerometer();
-	start_Thread_Keypad();
+	start_Thread_Keypad();	
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */
