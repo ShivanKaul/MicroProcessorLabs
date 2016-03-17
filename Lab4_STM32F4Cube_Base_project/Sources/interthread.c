@@ -1,6 +1,10 @@
 #include "cmsis_os.h" 
 extern osMutexId  disp_mutex; 
+
 extern osMutexId  alarm_mutex; 
+
+extern osMutexId  button_mutex;
+
 
 float displayed_values[3]; 
 float getSetValue(float newValue,int setmode, int index){
@@ -12,6 +16,7 @@ float getSetValue(float newValue,int setmode, int index){
 	osMutexRelease(disp_mutex); 
 	return newValue;
 }
+
 int alarm_flag;
 int getSetAlarm(int newValue, int setmode){
 	osMutexWait(alarm_mutex,osWaitForever); 
@@ -22,3 +27,17 @@ int getSetAlarm(int newValue, int setmode){
 	osMutexRelease(alarm_mutex); 
 	return newValue;
 }
+
+
+int buttonLastPressed;
+int getSetButton(int button, int setmode){
+	osMutexWait(button_mutex,osWaitForever); 
+	// set by keypad
+	if (setmode){
+		buttonLastPressed = button;
+	}
+	button = buttonLastPressed;
+	osMutexRelease(button_mutex); 
+	return button;
+}
+

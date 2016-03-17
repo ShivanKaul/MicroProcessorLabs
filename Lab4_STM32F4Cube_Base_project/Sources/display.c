@@ -81,16 +81,28 @@ int flicker_count;
 
 	
 	
-float getSetValue(float,int, int);	
+
 	
 int padded_stored, mul,alarm_flag, display_state=1;
+
+float getSetValue(float,int, int);
+int getSetButton(int, int);	
+
+
 float temperature_to_display;
+int buttonDisplay = 1;
 void updateDisplay(void) {
 	int padded = 0,	i,digit;
 	
 	if (!flicker_count){
 	// wait for semaphore from keypad
+
 		padded_stored = (int)(getSetValue(0,0,1) *100);
+
+		buttonDisplay = getSetButton(0, 0);
+		
+		padded = (int)(getSetValue(0,0,buttonDisplay) *100);
+
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded);

@@ -13,17 +13,25 @@
 #include "RTE_Components.h"             // Component selection
 #include "init.h"
 #include "kalman.h"
+#include "keypad.h"
+
 
 
 extern int start_Thread_ADC			(void);
 extern void Thread_ADC(void const *argument);
 extern osThreadId tid_Thread_ADC;
+
 extern int start_Thread_7Seg			(void);
 extern void Thread_7Seg(void const *argument);
 extern osThreadId tid_Thread_7Seg;
+
 extern int start_Thread_Accelerometer	(void);
 extern void Thread_Accelerometer(void const *argument);
 extern osThreadId tid_Thread_Accelerometer;
+
+extern int start_Thread_Keypad	(void);
+extern void Thread_Keypad(void const *argument);
+extern osThreadId tid_Thread_Keypad;
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
 */
@@ -52,6 +60,7 @@ int main (void) {
 	LISInit();
 	ADCInit();
 	kalman_init();
+	init_keypad();
 	matrix_init();
 	gpioInit();
 	
@@ -61,7 +70,7 @@ int main (void) {
   start_Thread_ADC();                       /* Create LED thread              */
 	start_Thread_7Seg();
 	start_Thread_Accelerometer();
-	
+	start_Thread_Keypad();	
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */
