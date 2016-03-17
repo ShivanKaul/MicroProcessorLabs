@@ -7,6 +7,8 @@
 #include "display.h"
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "stm32f4xx_hal.h"
+#include "stdio.h"
+#include "stm32f4xx.h"
 // Flags
 extern int DISPLAY_DIGIT,Seg7_MS_PASSED;
 //extern float temperature_to_display;
@@ -63,14 +65,16 @@ int flicker_count;
 				osDelay(5); //200Hz
 			//if (Seg7_MS_PASSED){
 				Seg7_MS_PASSED=0;
-				updateDisplay();
+				
 			DISPLAY_DIGIT++;
 			if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0;
 			
-			flicker_count= (flicker_count + 1) % flicker_bound;
+			flicker_count++;
+			if (flicker_count > flicker_bound) flicker_count = 0;
 			
-		//}
-			}
+			updateDisplay();
+		}
+			
 	}
 /**
 * @brief Update the 7 segment display
@@ -89,36 +93,51 @@ int padded_stored, mul,alarm_display_flag=1, display_state=1;
 
 int getSetButton(int, int);	
 
-
-#define ALARM_THRESHOLD 36
+int fputc(int c, FILE *stream)
+{
+   return(ITM_SendChar(c));
+}
+#define ALARM_THRESHOLD 37
 int buttonDisplay = 1;
+
 void updateDisplay(void) {
 	int padded,	i,digit;
 	
 	if (!flicker_count){
 		float temperature_for_alarm,read_value;
-	// wait for semaphore from keypad
-		buttonDisplay = getSetButton(0, 0);
+
+		
+		buttonDisplay = getSetButton(0, 0); 
 		read_value=getSetValue(0,0,buttonDisplay);
 		padded_stored = (int)(read_value *100);
-		// LED displaying logic
+		
+		
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded_stored);
 		for (i=mul; i<2;i++){
 			padded_stored /= 10;
 		}
+		
 		if(buttonDisplay==2){
-		temperature_for_alarm = read_value;
+			temperature_for_alarm = read_value;
 		}else{
-		temperature_for_alarm = getSetValue(0,0,2);}
+			temperature_for_alarm = getSetValue(0,0,2);
+		}
+				
+		printf("temp = %f, state = %d\t",temperature_for_alarm,display_state );
 		if (temperature_for_alarm < ALARM_THRESHOLD){
-		//if(!alarm_display_flag ){
+			alarm_display_flag =0;
+		} else{alarm_display_flag =1;}
+		if(!alarm_display_flag ){
 			display_state = 1;
 		}else {
+			printf("elsetemp = %f\t",temperature_for_alarm);
 			display_state = !display_state;
-			
 		}
+		printf("temp = %f, state = %d\n",temperature_for_alarm,display_state );
+
 	}	
+	
 	if (display_state){
 		padded = padded_stored;
 		// logic for displaying 

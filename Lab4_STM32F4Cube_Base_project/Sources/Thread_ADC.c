@@ -68,7 +68,7 @@ void poll() { //~10 us to complete?
 		
 	//	printf("%f\n", filtered_temp);
 			getSetValue(filtered_temp,1,2);
-
+			__HAL_ADC_CLEAR_FLAG(&ADC1_Handle,ADC_FLAG_EOC);
 			
 	}
 }

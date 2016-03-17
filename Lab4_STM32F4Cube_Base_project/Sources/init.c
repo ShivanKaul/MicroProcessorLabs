@@ -173,15 +173,15 @@ void ADCInit(void) {
 	ADC1_Handle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
 	ADC1_Handle.Init.Resolution = ADC_RESOLUTION_12B;
 	ADC1_Handle.Init.ScanConvMode = DISABLE;
-	ADC1_Handle.Init.ContinuousConvMode = ENABLE;
+	ADC1_Handle.Init.ContinuousConvMode = DISABLE;
 	ADC1_Handle.Init.DiscontinuousConvMode = DISABLE;
 	ADC1_Handle.Init.NbrOfDiscConversion = 0;
 	ADC1_Handle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-	ADC1_Handle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
+	ADC1_Handle.Init.ExternalTrigConv = ADC_SOFTWARE_START;
 	ADC1_Handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	ADC1_Handle.Init.NbrOfConversion = 1;
-	ADC1_Handle.Init.DMAContinuousRequests = ENABLE;
-	ADC1_Handle.Init.EOCSelection = DISABLE;
+	ADC1_Handle.Init.DMAContinuousRequests = DISABLE;
+	ADC1_Handle.Init.EOCSelection = ENABLE;
 	// ADC init
 	if (HAL_ADC_Init(&ADC1_Handle) != HAL_OK){
 		Error_Handler(ADC_INIT_FAIL);
