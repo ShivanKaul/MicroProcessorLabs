@@ -82,7 +82,7 @@ void updateDisplay(void) {
 		i,
 		digit;
 	// wait for semaphore from keypad
-		padded = (int)(getSetValue(0,0,2) *100);
+		padded = (int)(getSetValue(0,0,1) *100);
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded);
