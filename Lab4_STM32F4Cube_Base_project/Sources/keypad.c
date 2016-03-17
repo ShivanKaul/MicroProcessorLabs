@@ -21,7 +21,7 @@ int start_Thread_Keypad	(void){
   return(0);
 }
 
-int buttonPressed, keypad_flag = 0;
+int buttonPressed = 0, keypad_flag = 0;
 float getSetButton(int button, int setmode);
 void Thread_Keypad(void const *argument){
 	while (1) {
@@ -115,23 +115,10 @@ uint8_t readButton(void){
 		temp = read;
 		read = INITREAD;
 		switch (temp){
-			case button1: return 1;
-			case button2: return 2;
-			case button3: return 3;
-			case button4: return 4;
-			case button5: return 5;
-			case button6: return 6;
-			case button7: return 7;
-			case button8: return 8;
-			case button9: return 9;
-			case button0: return 0;
-			case buttonA: return 10;
-			case buttonB: return 11;
-			case buttonC: return 12;
-			case buttonD: return 13;
-			case buttonE: return 14;
-			case buttonF: return 15;
-			default: return temp;
+			case button1: return 0;
+			case button2: return 1;
+			case button3: return 2;
+			default: return NOREAD;
 		}
 	}
 }

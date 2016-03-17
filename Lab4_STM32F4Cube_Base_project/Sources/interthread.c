@@ -14,12 +14,13 @@ float getSetValue(float newValue,int setmode, int index){
 }
 
 int buttonLastPressed;
-float getSetButton(int button, int setmode){
+int getSetButton(int button, int setmode){
 	osMutexWait(button_mutex,osWaitForever); 
 	// set by keypad
 	if (setmode){
 		buttonLastPressed = button;
 	}
+	button = buttonLastPressed;
 	osMutexRelease(button_mutex); 
-	return buttonLastPressed;
+	return button;
 }

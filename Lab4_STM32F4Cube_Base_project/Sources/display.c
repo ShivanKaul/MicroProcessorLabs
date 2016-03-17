@@ -78,15 +78,16 @@ float getSetValue(float,int, int);
 int getSetButton(int, int);	
 
 float temperature_to_display;
-int button = 1;
+int buttonDisplay = 1;
 void updateDisplay(void) {
 	int padded = 0,
 		mul,
 		i,
 		digit;
 	// wait for semaphore from keypad
-		button = getSetButton(0, 0);
-		padded = (int)(getSetValue(0,0,button) *100);
+		buttonDisplay = getSetButton(0, 0);
+		
+		padded = (int)(getSetValue(0,0,buttonDisplay) *100);
 		// LED displaying logic
 		// logic for displaying decimal points
 		mul = getDecimalPointPosition(padded);
