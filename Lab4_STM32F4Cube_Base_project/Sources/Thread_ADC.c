@@ -58,7 +58,7 @@ float getSetValue(float newValue,int setmode, int index);
 * @param None
 * @retval None
 */
-void poll() { //~10 us to complete?
+void poll() { 
 	
 	float  voltage, temperature, filtered_temp;
 	HAL_ADC_Start(&ADC1_Handle);
