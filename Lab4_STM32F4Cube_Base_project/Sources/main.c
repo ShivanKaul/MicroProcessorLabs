@@ -15,9 +15,13 @@
 #include "kalman.h"
 #include "keypad.h"
 
+extern int start_Thread_ADC			(void);
+extern void Thread_ADC(void const *argument);
+extern osThreadId tid_Thread_ADC;
 
-
-
+extern int start_Thread_Accelerometer			(void);
+extern void Thread_Accelerometer(void const *argument);
+extern osThreadId tid_Thread_Accelerometer;
 
 extern int start_Thread_7Seg			(void);
 extern void Thread_7Seg(void const *argument);

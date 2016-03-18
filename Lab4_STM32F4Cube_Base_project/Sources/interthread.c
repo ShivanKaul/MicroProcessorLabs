@@ -8,7 +8,17 @@ extern osMutexId  button_mutex;
 
 
 float displayed_values[3]; 
-
+/*
+   * @brief Sets the values at the specific index and then sets it
+   * disp_mutex locks access to this function and variables
+   * @param newValue	The value at which to set 
+	 * @param setmode		0 to get 
+											1 to get
+	* @param setmode		0 for roll 
+											1 for pitch
+											2 for temperature
+   * @retval The current value that was retrieved or set
+*/
 float getSetValue(float newValue,int setmode, int index){
 	osMutexWait(disp_mutex,osWaitForever); 
 	if (setmode){
@@ -32,6 +42,13 @@ int getSetAlarm(int newValue, int setmode){
 
 
 int buttonLastPressed;
+/*
+   * @brief Sets the current channel used according to  the button press
+   * @param button	The value at which to set 
+	 * @param setmode		0 to get 
+											1 to get
+   * @retval The current value that was retrieved or set
+*/
 int getSetButton(int button, int setmode){
 	osMutexWait(button_mutex,osWaitForever); 
 	// set by keypad

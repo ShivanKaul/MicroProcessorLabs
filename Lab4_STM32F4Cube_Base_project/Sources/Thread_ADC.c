@@ -18,9 +18,13 @@ osThreadDef(Thread_ADC, osPriorityAboveNormal, 1, 0);
 void poll(void);
 osMutexId  alarm_mutex; 
 osMutexDef (alarm_mutex); 
-/*----------------------------------------------------------------------------
- *      Create the thread within RTOS context
- *---------------------------------------------------------------------------*/
+
+/**
+* @brief Create temperature the thread within RTOS context
+* @param None
+* @retval 0 if no errors 
+* 				-1 if errors
+*/
 int start_Thread_ADC (void) {
 	alarm_mutex = osMutexCreate(osMutex(alarm_mutex));
   tid_Thread_ADC = osThreadCreate(osThread(Thread_ADC ), NULL); // Start LED_Thread
@@ -30,18 +34,19 @@ int start_Thread_ADC (void) {
 
 
 #define ADC_FLAG 1
-	void Thread_ADC (void const *argument) {
+/**
+* @brief Main loop for the adc
+* @param None
+* @retval None 
+*/
+void Thread_ADC (void const *argument) {
 		while(1){
-							osSignalWait (ADC_FLAG,osWaitForever); 
-	osSignalClear(tid_Thread_ADC,ADC_FLAG); 
-				osDelay(40); //25 Hz
-				poll();
-			}
-	}
+			osSignalWait (ADC_FLAG,osWaitForever); 
+			osSignalClear(tid_Thread_ADC,ADC_FLAG); 
+			poll();
+		}
+}
 	
-	
-int NOW_CONVERT,NOW_CHANGE_TEMP,ALARM;
-
 
 extern ADC_HandleTypeDef	ADC1_Handle;
 extern kalman_state kalman_temp;
