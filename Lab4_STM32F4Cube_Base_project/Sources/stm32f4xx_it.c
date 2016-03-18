@@ -156,23 +156,40 @@ void EXTI0_IRQHandler(void){
  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
 
-// Accelerometer interrupt
+/**
+  * @brief  This function handles accelerometer interrupt
+  * @param  uint16_t GPIO_Pin
+  * @retval None
+  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin==GPIO_PIN_0){
 		 osSignalSet (tid_Thread_Accelerometer, data_ready_flag);
 	}
 }
 
-
+/**
+  * @brief  This function handles TIM2
+  * @param  None
+  * @retval None
+  */
 void TIM2_IRQHandler() {
 	HAL_TIM_IRQHandler(&TIM_LED_handle);
 }
+/**
+  * @brief  This function handles TIM3
+  * @param  None
+  * @retval None
+  */
 void TIM3_IRQHandler() {
 	HAL_TIM_IRQHandler(&TIM_ADC_handle);
 }
 extern TIM_HandleTypeDef TIM_LED_handle;
 
-
+/**
+  * @brief  This function handles TIM - we use TIM2 for display and TIM3 for ADC
+  * @param  TIM_HandleTypeDef tim
+  * @retval None
+  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 		if (tim->Instance== TIM2){
 			osSignalSet (tid_Thread_7Seg, Seg7_MS_PASSED);			
@@ -190,27 +207,5 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
 /*  file (startup_stm32f4xx.s).                                               */
 /******************************************************************************/
 
-
-
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
-//	//if (tim->Instance==TIM2){
-//		
-//		Seg7_MS_PASSED=1;
-//		if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0; // Wrap around for 3 digits
-////		angle_counter++;
-////		if (angle_counter > 1000) {
-////			angle_counter = 0; // Wrap around for 3 digits
-////			angle_flag = 1;
-////		}
-//	//}
-//}
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

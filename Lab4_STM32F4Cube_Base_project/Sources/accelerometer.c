@@ -7,7 +7,7 @@
 #include "math.h"
 #include "interthread.h"
 
-
+// Variables + function names
 osThreadId tid_Thread_Accelerometer;
 void Thread_Accelerometer(void const *argument);
 osThreadDef(Thread_Accelerometer, osPriorityAboveNormal, 1, 0);
@@ -17,12 +17,23 @@ void calculateAngles (void);
 float current_angle;
 
 #define data_ready_flag 1
+
+/**
+  * @brief  Start accelerometer thread
+  * @param  None
+  * @retval int
+  */
 int start_Thread_Accelerometer	(void){
 	tid_Thread_Accelerometer = osThreadCreate(osThread(Thread_Accelerometer ), NULL); // Start LED_Thread
   if (!tid_Thread_Accelerometer) return(-1); 
   return(0);
 }
 
+/**
+  * @brief  Accelerometer thread
+  * @param  arguments
+  * @retval None
+  */
 void Thread_Accelerometer(void const *argument){
 	while(1){
 	osSignalWait (data_ready_flag,osWaitForever); 
@@ -94,7 +105,8 @@ void convertAccToAngle(float* acc, float* angles) {
 	angles[1] = getArcTan(acc[1],acc[0], acc[2]);
 	// angles[2] = getArcTan(acc[2],acc[0], acc[1]);
 }
-	
+
+// Helper function
 float absolute(float x) {
 	return x >= 0 ? x : -x;
 }
