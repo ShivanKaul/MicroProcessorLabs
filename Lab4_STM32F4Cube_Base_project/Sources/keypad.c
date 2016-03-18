@@ -16,6 +16,11 @@ osMutexId  button_mutex;
 osMutexDef (button_mutex); 
 #define NOREAD 100
 
+/**
+   * @brief Create keypad thread
+   * @param None
+   * @retval The correct value of button read or Error code NOREAD
+   */
 int start_Thread_Keypad	(void){
 	tid_Thread_Keypad = osThreadCreate(osThread(Thread_Keypad), NULL); // Start thread
   if (!tid_Thread_Keypad) return(-1); 
@@ -23,9 +28,13 @@ int start_Thread_Keypad	(void){
 }
 
 int buttonPressed = 0, keypad_flag = 0;
+/**
+   * @brief Keypad thread
+   * @param arguments
+   * @retval None
+   */
 void Thread_Keypad(void const *argument){
 	while (1) {
-		// frequency of scanning? wait for 1 ms
 		osDelay(1);
 		keypad_flag = !keypad_flag;
 		buttonPressed = readButton();
@@ -111,7 +120,6 @@ uint8_t readButton(void){
 		setInput(&GPIO_Init_Keypad_Row);
 		setOutput(&GPIO_Init_Keypad_Col);
 		debouncing_countdown=DEBOUNCE_DELAY;
-		//printf("full %d\n",read);
 		temp = read;
 		read = INITREAD;
 		switch (temp){
