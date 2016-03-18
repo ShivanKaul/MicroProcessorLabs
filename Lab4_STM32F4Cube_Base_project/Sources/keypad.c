@@ -7,9 +7,10 @@
 #include "keypad.h"
 #include "stdio.h"
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
+#include "interthread.h"
 osThreadId tid_Thread_Keypad;
 void Thread_Keypad(void const *argument);
-osThreadDef(Thread_Keypad, osPriorityNormal, 1, 0);
+osThreadDef(Thread_Keypad, osPriorityBelowNormal, 1, 0);
 
 osMutexId  button_mutex; 
 osMutexDef (button_mutex); 
@@ -22,7 +23,6 @@ int start_Thread_Keypad	(void){
 }
 
 int buttonPressed = 0, keypad_flag = 0;
-float getSetButton(int button, int setmode);
 void Thread_Keypad(void const *argument){
 	while (1) {
 		// frequency of scanning? wait for 1 ms

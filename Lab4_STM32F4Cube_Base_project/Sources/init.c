@@ -9,7 +9,7 @@
 /* Variables */
 LIS3DSH_InitTypeDef LISInitStruct; 
 LIS3DSH_DRYInterruptConfigTypeDef LISIntConfig;
-TIM_HandleTypeDef TIM_LED_handle;
+TIM_HandleTypeDef TIM_LED_handle,TIM_ADC_handle;
 kalman_state kalman_x, kalman_y,kalman_z;
 float acc[3],out[4];
 arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
@@ -35,7 +35,7 @@ void gpioInit(void) {
 	HAL_GPIO_Init(GPIOE, &GPIO_Init_Acc);
 	
 	// Set priority for the accelerometer
-	HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+	HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 0);
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 	
 	// 7 segment display
@@ -92,13 +92,13 @@ void LISInit(void) {
 * @param None
 * @retval None
 */
-void TIMInit(void)
+void TIM_LED_Init(void)
 {	
 	// Period is 1 ms for display
 	TIM_Base_InitTypeDef Timinit;
 	__TIM2_CLK_ENABLE();
-	Timinit.Period = 1000; /* 1 MHz to 1 kHz */
-	Timinit.Prescaler = 42; /* 42 MHz to 1 MHz */
+	Timinit.Period = 5000; /* 1 MHz to  200 Hz */
+	Timinit.Prescaler = 84; /* 84 MHz to 1 MHz */
 	Timinit.CounterMode = TIM_COUNTERMODE_UP;
 	Timinit.ClockDivision = TIM_CLOCKDIVISION_DIV1; // default
 	
@@ -115,8 +115,37 @@ void TIMInit(void)
 	HAL_TIM_Base_Start_IT(&TIM_LED_handle);
 
 	// Set up NVIC
-	HAL_NVIC_SetPriority(TIM2_IRQn, 2,0);
+	HAL_NVIC_SetPriority(TIM2_IRQn, 3,0);
 	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+	
+
+}
+
+void TIM_ADC_Init(void)
+{	
+	// Period is 1 ms for display
+	TIM_Base_InitTypeDef Timinit;
+	__TIM3_CLK_ENABLE();
+	Timinit.Period = 10000; /* 1 MHz to 100 Hz */
+	Timinit.Prescaler = 84; /*  MHz to 1 MHz */
+	Timinit.CounterMode = TIM_COUNTERMODE_UP;
+	Timinit.ClockDivision = TIM_CLOCKDIVISION_DIV1; // default
+	
+	// As mandated by lab
+	TIM_ADC_handle.Instance = TIM3;
+	TIM_ADC_handle.Init = Timinit;
+	TIM_ADC_handle.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED; //default
+	TIM_ADC_handle.Lock = HAL_UNLOCKED;  //default
+	TIM_ADC_handle.State = HAL_TIM_STATE_RESET; //default
+
+	HAL_TIM_Base_MspInit(&TIM_ADC_handle);
+	
+	HAL_TIM_Base_Init(&TIM_ADC_handle);
+	HAL_TIM_Base_Start_IT(&TIM_ADC_handle);
+
+	// Set up NVIC
+	HAL_NVIC_SetPriority(TIM3_IRQn, 1,0);
+	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	
 
 }
@@ -184,7 +213,7 @@ void ADCInit(void) {
 	ADC1_Handle.Init.EOCSelection = ENABLE;
 	// ADC init
 	if (HAL_ADC_Init(&ADC1_Handle) != HAL_OK){
-		Error_Handler(ADC_INIT_FAIL);
+		
 	}
 	
 	//Initialize Channel - we use channel 16, which is hard set to be temperature sensor
@@ -195,7 +224,7 @@ void ADCInit(void) {
 	
 	// Config channel
 	if (HAL_ADC_ConfigChannel(&ADC1_Handle, &ADC_Channel) != HAL_OK) {
-        Error_Handler(ADC_INIT_FAIL);
+       
 	}
 }
 

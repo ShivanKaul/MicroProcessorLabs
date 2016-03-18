@@ -17,17 +17,12 @@
 
 
 
-extern int start_Thread_ADC			(void);
-extern void Thread_ADC(void const *argument);
-extern osThreadId tid_Thread_ADC;
+
 
 extern int start_Thread_7Seg			(void);
 extern void Thread_7Seg(void const *argument);
 extern osThreadId tid_Thread_7Seg;
 
-extern int start_Thread_Accelerometer	(void);
-extern void Thread_Accelerometer(void const *argument);
-extern osThreadId tid_Thread_Accelerometer;
 
 extern int start_Thread_Keypad	(void);
 extern void Thread_Keypad(void const *argument);
@@ -56,7 +51,8 @@ int main (void) {
 
   SystemClock_Config();                     /* Configure the System Clock     */
 	
-	//TIMInit();
+	TIM_LED_Init();
+	TIM_ADC_Init();
 	LISInit();
 	ADCInit();
 	kalman_init();

@@ -14,7 +14,7 @@
 #include "stdio.h"
 void Thread_ADC (void const *argument);                 // thread function
 osThreadId tid_Thread_ADC;                              // thread id
-osThreadDef(Thread_ADC, osPriorityNormal, 1, 0);
+osThreadDef(Thread_ADC, osPriorityAboveNormal, 1, 0);
 void poll(void);
 osMutexId  alarm_mutex; 
 osMutexDef (alarm_mutex); 
@@ -28,11 +28,12 @@ int start_Thread_ADC (void) {
   return(0);
 }
 
- /*----------------------------------------------------------------------------
-*      Thread  'LED_Thread': Toggles LED
- *---------------------------------------------------------------------------*/
+
+#define ADC_FLAG 1
 	void Thread_ADC (void const *argument) {
 		while(1){
+							osSignalWait (ADC_FLAG,osWaitForever); 
+	osSignalClear(tid_Thread_ADC,ADC_FLAG); 
 				osDelay(40); //25 Hz
 				poll();
 			}
@@ -72,11 +73,4 @@ void poll() { //~10 us to complete?
 			
 	}
 }
-/*----------------------------------------------------------------------------
- *      Initialize the GPIO associated with the LED
- *---------------------------------------------------------------------------*/
 
-	
-/*----------------------------------------------------------------------------
- *      
- *---------------------------------------------------------------------------*/

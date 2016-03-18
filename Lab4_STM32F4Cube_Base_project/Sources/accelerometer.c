@@ -5,11 +5,12 @@
 #include "lis3dsh.h"
 #include "arm_math.h"
 #include "math.h"
+#include "interthread.h"
 
 
 osThreadId tid_Thread_Accelerometer;
 void Thread_Accelerometer(void const *argument);
-osThreadDef(Thread_Accelerometer, osPriorityNormal, 1, 0);
+osThreadDef(Thread_Accelerometer, osPriorityAboveNormal, 1, 0);
 void convertAccToAngle(float* acc, float* angles);
 extern arm_matrix_instance_f32 x_matrix,w_matrix,y_matrix;
 void calculateAngles (void);
@@ -98,18 +99,4 @@ float absolute(float x) {
 	return x >= 0 ? x : -x;
 }
 
-/**
-  * @brief  This function handles EXTI0 interrupt request.
-  * @param  None
-  * @retval None
-  */
-void EXTI0_IRQHandler(void){
- HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
-}
 
-// Accelerometer interrupt
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if (GPIO_Pin==GPIO_PIN_0){
-		 osSignalSet (tid_Thread_Accelerometer, data_ready_flag);
-	}
-}

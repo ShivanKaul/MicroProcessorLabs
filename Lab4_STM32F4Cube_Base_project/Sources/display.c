@@ -9,10 +9,10 @@
 #include "stm32f4xx_hal.h"
 #include "stdio.h"
 #include "stm32f4xx.h"
+#include "interthread.h"
 // Flags
-extern int DISPLAY_DIGIT,Seg7_MS_PASSED;
+int DISPLAY_DIGIT;
 //extern float temperature_to_display;
-extern int display_flag;
 
 // Define statments, for prettier code
 #define LED_EN_0 GPIO_PIN_7 /*pin 7*/
@@ -54,51 +54,50 @@ int start_Thread_7Seg (void) {
   if (!tid_Thread_7Seg) return(-1); 
   return(0);
 }
+
 #define flicker_bound 64
 int flicker_count;
  /*----------------------------------------------------------------------------
 *      Thread  'LED_Thread': Toggles LED
  *---------------------------------------------------------------------------*/
-	void Thread_7Seg (void const *argument) {
+	#define Seg7_MS_PASSED 1
+void Thread_7Seg (void const *argument) {
 		while(1){
+			//waiting logic
+			osSignalWait (Seg7_MS_PASSED,osWaitForever); 
+			osSignalClear(tid_Thread_7Seg,Seg7_MS_PASSED); 
 			
-				osDelay(5); //200Hz
-			//if (Seg7_MS_PASSED){
-				Seg7_MS_PASSED=0;
-				
+			//individual digit multiplexing
 			DISPLAY_DIGIT++;
 			if (DISPLAY_DIGIT > 2) DISPLAY_DIGIT = 0;
-			
+			//making sure value isn't undated too frequently
 			flicker_count++;
-			if (flicker_count > flicker_bound) flicker_count = 0;
 			
+			if (flicker_count > flicker_bound) flicker_count = 0;
 			updateDisplay();
 		}
 			
-	}
-/**
-* @brief Update the 7 segment display
-* @file display.c
-* @param None
-* @retval None
-*/
+}
+
 
 	
-	
 
-float getSetValue(float,int, int);	
 	
 int padded_stored, mul,alarm_display_flag=1, display_state=1;
-
-
-int getSetButton(int, int);	
-
 int fputc(int c, FILE *stream)
 {
    return(ITM_SendChar(c));
 }
-#define ALARM_THRESHOLD 37
+
+#define ALARM_THRESHOLD 33
 int buttonDisplay = 1;
+
+/**
+* @brief Update the 7 segment display and flicker if alarm
+* @file display.c
+* @param None
+* @retval None
+*/
 
 void updateDisplay(void) {
 	int padded,	i,digit;
@@ -124,18 +123,17 @@ void updateDisplay(void) {
 			temperature_for_alarm = getSetValue(0,0,2);
 		}
 				
-		printf("temp = %f, state = %d\t",temperature_for_alarm,display_state );
-		if (temperature_for_alarm < ALARM_THRESHOLD){
+		//flickering logic
+		if (temperature_for_alarm < ALARM_THRESHOLD+0.1){
 			alarm_display_flag =0;
-		} else{alarm_display_flag =1;}
+		} else if (temperature_for_alarm > ALARM_THRESHOLD-0.){
+			alarm_display_flag =1;
+		}
 		if(!alarm_display_flag ){
 			display_state = 1;
 		}else {
-			printf("elsetemp = %f\t",temperature_for_alarm);
 			display_state = !display_state;
 		}
-		printf("temp = %f, state = %d\n",temperature_for_alarm,display_state );
-
 	}	
 	
 	if (display_state){
@@ -229,12 +227,8 @@ uint32_t getRegisterLEDValue(int num,int place,int dp_pos) {
 	return val;
 	
 }
-extern TIM_HandleTypeDef TIM_LED_handle;
-void TIM2_IRQHandler() {
-	HAL_TIM_IRQHandler(&TIM_LED_handle);
-}
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
-		
-		Seg7_MS_PASSED=1;
 
-}
+		
+
+	
+

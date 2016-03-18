@@ -1,4 +1,5 @@
 #include "cmsis_os.h" 
+#include "interthread.h"
 extern osMutexId  disp_mutex; 
 
 extern osMutexId  alarm_mutex; 
@@ -7,6 +8,7 @@ extern osMutexId  button_mutex;
 
 
 float displayed_values[3]; 
+
 float getSetValue(float newValue,int setmode, int index){
 	osMutexWait(disp_mutex,osWaitForever); 
 	if (setmode){

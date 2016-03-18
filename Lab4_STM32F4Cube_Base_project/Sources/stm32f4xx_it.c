@@ -44,6 +44,7 @@
 #include "stm32f4xx_hal.h"
 #include "stdio.h"
 #include "lis3dsh.h"
+#include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 
 
 
@@ -138,14 +139,49 @@ void UsageFault_Handler(void)
 void DebugMon_Handler(void)
 {
 }
+extern osThreadId tid_Thread_7Seg;
+extern osThreadId tid_Thread_ADC;
+extern osThreadId tid_Thread_Accelerometer;
+extern TIM_HandleTypeDef TIM_ADC_handle,TIM_LED_handle;
+#define data_ready_flag 1
+#define Seg7_MS_PASSED 1
+#define ADC_FLAG 1
+
+/**
+  * @brief  This function handles EXTI0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void){
+ HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+}
+
+// Accelerometer interrupt
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if (GPIO_Pin==GPIO_PIN_0){
+		 osSignalSet (tid_Thread_Accelerometer, data_ready_flag);
+	}
+}
 
 
-int Seg7_MS_PASSED=0;
-int angle_counter;
+void TIM2_IRQHandler() {
+	HAL_TIM_IRQHandler(&TIM_LED_handle);
+}
+void TIM3_IRQHandler() {
+	HAL_TIM_IRQHandler(&TIM_ADC_handle);
+}
 extern TIM_HandleTypeDef TIM_LED_handle;
-int ACCELERATION_FLAG,angle_flag;
-extern float out[4];
-int DISPLAY_DIGIT;
+
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* tim){
+		if (tim->Instance== TIM2){
+			osSignalSet (tid_Thread_7Seg, Seg7_MS_PASSED);			
+		}
+		else if(tim->Instance== TIM3){
+			osSignalSet (tid_Thread_ADC, ADC_FLAG);
+		}
+}
+
 
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */
